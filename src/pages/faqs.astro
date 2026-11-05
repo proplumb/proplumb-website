@@ -1,0 +1,166 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Cta from "../components/Cta.astro";
+import headerImage from "../assets/images/proplumb_premium_residential_2_3_horizontal (1).webp";
+import ctaImage from "../assets/images/proplumb_office_people_andy_adam.webp";
+import { createFaqJsonLd } from "../lib/seo";
+
+const faqs = [
+  {
+    question: "What types of projects does ProPlumb specialise in?",
+    answer: `ProPlumb specialises in residential, medium-density, high-end architectural, commercial, and civil plumbing and drainage projects. <br/> We work primarily with professional builders and developers who value structure, clear communication, and predictable delivery across both high-volume and bespoke builds.
+`,
+  },
+  {
+    question: "How does ProPlumb manage lead times and scheduling?",
+    answer: `
+     Lead times are managed through detailed planning, accurate take-offs, and disciplined capacity management.
+<br/> Jobs are scheduled based on realistic timeframes, not assumptions, which helps protect build programs and avoid downstream delays for site supervisors and project managers.`,
+  },
+  {
+    question: "Can ProPlumb deliver projects on the first visit?",
+    answer:
+      "Completion on the first visit is a key focus across all projects. This is supported by pre-planning, correct material allocation, and clear job scoping, reducing rework and unnecessary site disruption wherever possible.",
+  },
+  {
+    question: "How does ProPlumb ensure compliance across projects?",
+    answer: `All works are completed in accordance with Australian Standards, NCC requirements, and relevant plumbing codes. <br/> Compliance is treated as a baseline expectation, supported by structured quality checks, documentation, and accountable job close-out processes.
+`,
+  },
+  {
+    question:
+      "How does ProPlumb communicate with builders and site supervisors?",
+    answer: `Communication is clear, relevant, and purposeful. <br/> Supervisors receive the information they need to keep jobs moving, including completion updates and access to QA documentation, without unnecessary phone calls or noise.
+`,
+  },
+  {
+    question:
+      "Does ProPlumb handle high-end and architectural residential builds?",
+    answer: `Yes. ProPlumb regularly delivers high-end and architectural residential projects that involve bespoke design elements, premium materials, and complex wet areas. <br/>
+These builds require early coordination, adaptability, and precise execution, all of which are supported by ProPlumb’s systems and experience.`,
+  },
+  {
+    question: "Can ProPlumb support both volume housing and custom projects?",
+    answer: `ProPlumb is structured to support both high-volume housing programs and detailed custom builds. <br/>
+The same planning discipline, quality controls, and communication standards are applied across every project, regardless of scale.
+`,
+  },
+  {
+    question: "How does ProPlumb manage quality across multiple sites?",
+    answer: `Quality is managed through standardised processes, experienced supervision, and documented QA checks.
+<br/>This approach supports consistent outcomes across multiple sites while reducing risk, rework, and warranty issues for builders.
+`,
+  },
+  {
+    question: "Does ProPlumb work alongside civil contractors?",
+    answer: `Yes. While ProPlumb has in-house civil and drainage capability, the team regularly works alongside external civil contractors where required.<br/>
+Close coordination ensures accuracy, correct set-outs, and compliance during excavation and drainage stages.
+`,
+  },
+  {
+    question: "Why do leading builders choose ProPlumb?",
+    answer: `Builders choose ProPlumb for reliability, structured delivery, and predictable outcomes.<br/>
+Consistent scheduling, strong communication, and disciplined execution allow site teams to keep projects moving with fewer surprises and clearer accountability.
+`,
+  },
+  {
+    question: "How does ProPlumb manage safety on active construction sites?",
+    answer: `Safety is embedded into how we plan and deliver work on site. <br/> ProPlumb operates in line with site-specific OHS requirements, builder safety frameworks, and Australian construction safety standards. <br/> Our team completes required inductions, prepares Safe Work Method Statements where applicable, and works closely with site supervisors to ensure plumbing and civil works are carried out safely, efficiently, and in line with program expectations.`,
+  },
+];
+---
+
+<Layout
+  title="Frequently Asked Questions"
+  description="Answers to common questions about working with ProPlumb across plumbing, civil, drainage, scheduling, quality, compliance, and safety."
+  canonical="/faqs"
+  ogImage={headerImage}
+  jsonLd={createFaqJsonLd(faqs)}
+>
+  <Header
+    title={`Frequently Asked <span class="font-bold">Questions</span>`}
+    subtitle="Here you will find answers to the most popular questions <br/> about working ProPlumb"
+    img={headerImage}
+  />
+
+  <section
+    class="w-full border-t border-white/10 py-8 md:py-12"
+    data-animate="none"
+  >
+    <div class="max-w-7xl mx-auto px-5 md:px-10">
+      {
+        faqs.map((faq, index) => (
+          <details
+            class="group border-b border-white/10 py-9 animate-fade-left"
+            style={`--reveal-delay:${Math.min(index, 6) * 90}ms`}
+            open={index === 0}
+          >
+            <summary class="list-none cursor-pointer flex items-start lg:items-center gap-5">
+              <span class="shrink-0 mt-1 size-10 rounded-full bg-white/15 flex items-center justify-center">
+                <svg
+                  class="size-6 text-white transition-transform duration-300 group-open:rotate-180"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M10 4.5V14.5M6 10.5L10 14.5L14 10.5"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <h3 class="text-2xl lg:text-3xl leading-[1.1] font-light max-w-5xl">
+                {faq.question}
+              </h3>
+            </summary>
+            <div class="faq-answer-grid ml-12 max-w-[900px]">
+              <div class="faq-answer-inner">
+                <p
+                  class="pt-4 text-white/80 text-base md:text-lg leading-relaxed"
+                  set:html={faq.answer}
+                ></p>
+              </div>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <Cta
+    img={ctaImage}
+    title={`Interested in Working with <span class="font-bold">ProPlumb?</span>`}
+    desc="If you're looking to build a long-term career in structured, professional plumbing and civil contracting, we'd welcome the conversation."
+    buttonText="Explore Opportunities"
+    buttonHref="/careers"
+  />
+</Layout>
+
+<style>
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-answer-grid {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 320ms ease,
+      opacity 280ms ease;
+  }
+
+  .faq-answer-inner {
+    overflow: hidden;
+  }
+
+  details[open] .faq-answer-grid {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+</style>

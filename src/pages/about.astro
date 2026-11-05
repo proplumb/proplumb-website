@@ -1,0 +1,32 @@
+---
+import Layout from "../layouts/Layout.astro";
+import AboutHero from "../components/About/AboutHero.astro";
+import OurStory from "../components/About/OurStory.astro";
+import Timeline from "../components/About/Timline.astro";
+import Team from "../components/About/Team.astro";
+import Vision from "../components/About/Vision.astro";
+import Pillars from "../components/About/Pillars.astro";
+import Community from "../components/About/Community.astro";
+import Cta from "../components/Cta.astro";
+import aboutOgImage from "../assets/images/about/proplumb_ateam_warehouse.webp";
+---
+
+<Layout
+  title="About ProPlumb"
+  description="Learn about ProPlumb's structured plumbing, civil, and drainage delivery, built on experienced teams, clear systems, safety, and long-term builder partnerships."
+  canonical="/about"
+  ogImage={aboutOgImage}
+>
+  <AboutHero />
+  <OurStory />
+  <Timeline />
+  <Vision />
+  <Team />
+  <Pillars />
+  <Community />
+  <Cta
+    img={import("../assets/images/proplumb_civildrainage_thewlissrd_people.webp")}
+    title={`Ready to Work with the <br/> <span class="font-bold">Plumbing, Drainage  & Civil</span> <br/>Professionals?`}
+    desc=`If you’re looking for a partner with the experience, systems, and people to support your next project reliably and on schedule, we’d welcome the conversation.`
+  />
+</Layout>

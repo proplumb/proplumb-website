@@ -1,0 +1,212 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/images/proplumb-black-logo.png";
+
+const proplumbLinks = [
+  { name: "Home", href: "/" },
+  { name: "About Us", href: "/about" },
+  { name: "Services", href: "/services" },
+  // { name: "Projects", href: "/showcase" },
+  { name: "Careers", href: "/careers" },
+  { name: "FAQs", href: "/faqs" },
+];
+
+const whatWeDoLinks = [
+  { name: "Volume Housing Plumbing", href: "/services/plumbing" },
+  { name: "Medium Density & Multi-Unit Plumbing", href: "/services/plumbing" },
+  {
+    name: "High-End Residential Plumbing",
+    href: "/services/plumbing",
+  },
+  { name: "Civil & Drainage Works", href: "/services/civil-drainage" },
+  {
+    name: "Underground Services Coordination",
+    href: "/services/civil-drainage",
+  },
+];
+
+const legalLinks = [
+  { name: "Privacy Policy", href: "/privacy-policy" },
+  { name: "Terms of Use", href: "/terms-of-use" },
+];
+
+const socialLinks = [
+  {
+    name: "Facebook",
+    href: "https://web.facebook.com/profile.php?id=61577847224704#",
+    path: "M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073Z",
+  },
+  {
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/company/pro-plumb/?originalSubdomain=au",
+    path: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286ZM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065Zm1.782 13.019H3.555V9h3.564v11.452ZM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003Z",
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/proplumb.au",
+    path: "M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9Zm9.25 2a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7.25A4.75 4.75 0 1 1 12 16.75 4.75 4.75 0 0 1 12 7.25Zm0 2A2.75 2.75 0 1 0 12 14.75 2.75 2.75 0 0 0 12 9.25Z",
+  },
+];
+---
+
+<footer
+  class="relative z-30 overflow-hidden border-t border-white/10 bg-[#050505] py-16 md:py-20"
+>
+  <div
+    class="pointer-events-none absolute inset-0 opacity-90"
+    style="background: linear-gradient(83deg, #323232 3.3%, #000 97.91%);"
+  >
+  </div>
+
+  <div class="relative mx-auto w-full max-w-[1280px] px-4 sm:px-6 md:px-10">
+    <div class="grid gap-12 lg:grid-cols-[1.8fr_1fr_1.45fr_1fr_1fr] lg:gap-8">
+      <div class="lg:pr-6">
+        <Image
+          src={logo}
+          alt="ProPlumb"
+          width={218}
+          height={28}
+          class="h-auto w-[200px]"
+        />
+
+        <p class="mt-6 text-[14px] leading-[16px] text-white">
+          Professionals in Civil Drainage & Plumbing<br />
+          <span class="font-extrabold">30+ years strong</span>
+        </p>
+
+        <p class="mt-4 max-w-[320px] text-[14px] leading-[16px] text-white/90">
+          ProPlumb delivers civil, drainage, and plumbing solutions focused on
+          accuracy and long-term reliability.
+        </p>
+
+        <p class="mt-4 max-w-[320px] text-[14px] leading-[16px] text-white/90">
+          With over 30 years' experience working alongside Australia's leading
+          builders and developers, we have earned a reputation for structured
+          systems and reliable delivery, without hidden surprises.
+        </p>
+
+        <div class="mt-7 flex items-center gap-3" aria-label="Social links">
+          {
+            socialLinks.map((social) => (
+              <a
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit ProPlumb on ${social.name}`}
+                class="flex h-9 w-9 items-center justify-center border-2 border-[#555555] bg-transparent text-white transition-colors hover:border-white hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:h-10 sm:w-10"
+              >
+                <svg
+                  class="h-[18px] w-[18px] sm:h-5 sm:w-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d={social.path} />
+                </svg>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <div
+        class="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-8 sm:gap-y-10 lg:col-span-4 lg:grid-cols-4"
+      >
+        <div class="col-span-1">
+          <h3
+            class="text-[15px] font-bold uppercase leading-[22px] tracking-[0.02em] text-white"
+          >
+            Proplumb
+          </h3>
+          <ul class="mt-5 space-y-1">
+            {
+              proplumbLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="text-[14px] leading-[24px] text-[#8b8b8b] transition-colors hover:text-white"
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="col-span-1">
+          <h3
+            class="text-[15px] font-bold uppercase leading-[22px] tracking-[0.02em] text-white"
+          >
+            What We Do
+          </h3>
+          <ul class="mt-5 space-y-1">
+            {
+              whatWeDoLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="text-[14px] leading-[24px] text-[#8b8b8b] transition-colors hover:text-white"
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="col-span-1">
+          <h3
+            class="text-[15px] font-bold uppercase leading-[22px] tracking-[0.02em] text-white"
+          >
+            Legal Links
+          </h3>
+          <ul class="mt-5 space-y-1">
+            {
+              legalLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="text-[14px] leading-[24px] text-[#8b8b8b] transition-colors hover:text-white"
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="col-span-1">
+          <h3
+            class="text-[15px] font-bold uppercase leading-[22px] tracking-[0.02em] text-white"
+          >
+            Business Details
+          </h3>
+          <div class="mt-5 space-y-0 leading-[24px] text-white/90">
+            <p class="text-[14px]">(03) 5940 2477</p>
+            <p>
+              <a
+                href="mailto:admin@proplumb.com.au"
+                class="text-[#99e4ff] transition-opacity hover:opacity-80 text-[14px]"
+              >
+                admin@proplumb.com.au
+              </a>
+            </p>
+            <p class="text-[14px]">7B Evolution Dr,</p>
+            <p class="text-[14px]">Pakenham VIC 3810</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 border-t border-white/10 pt-5 md:mt-12 md:pt-6">
+      <span
+        class="text-[14px] leading-[14px] text-white text-right w-full flex items-center justify-center"
+      >
+        © 2026 ProPlumb. All Rights Reserved.
+      </span>
+    </div>
+  </div>
+</footer>

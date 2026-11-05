@@ -1,0 +1,227 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import headerImage from "../../assets/images/proplumb1proplumb_civildrainage_th.webp";
+import { Image } from "astro:assets";
+import serviceImage1 from "../../assets/images/proplumb_civildrainage_thewlissrd_onsite_works.webp";
+import serviceImage2 from "../../assets/images/proplumb_civildrainage_thewlissrd_onsite_works-2.webp";
+import disiplinedImage from "../../assets/images/proplumb_civildrainage_thewlissrd_vehicles___equipme.webp";
+import heartIcon from "../../assets/images/services/icons/heart-icon.png";
+import shieldIcon from "../../assets/images/services/icons/shiled-icon.png";
+import rateIcon from "../../assets/images/services/icons/rate-icon.png";
+import goalIcon from "../../assets/images/services/icons/goal-icon.png";
+import Cta from "../../components/Cta.astro";
+import ctaImage from "../../assets/images/proplumb_mediumdensity_evergreen_people.webp";
+import { createBreadcrumbJsonLd, createServiceJsonLd } from "../../lib/seo";
+
+const residentialPlumbingServices = [
+  {
+    id: 1,
+    title: "Civil & Drainage Works",
+    desc: `We deliver stormwater, sewer, and associated civil works across residential, medium density, and commercial developments. <br/> <br/>
+          From trenching and service connections through to coordination with engineering requirements, our civil and drainage scopes are planned to minimise disruption and support steady project progression.`,
+    img: serviceImage1,
+  },
+  {
+    id: 2,
+    title: "Underground Services Coordination",
+    desc: `Civil works rarely exist in isolation.
+<br><br>
+Our team works closely with builders, engineers, and other trades to ensure underground services integrate cleanly into the broader construction program. Clear documentation, disciplined scheduling, and proactive issue resolution reduce rework and help keep projects moving as planned.`,
+    img: serviceImage2,
+  },
+];
+
+const whyChoosUs = [
+  {
+    id: 1,
+    name: "Proven Experience",
+    desc: "Decades of combined experience delivering civil and drainage scopes across varied project types.",
+    icons: heartIcon,
+  },
+  {
+    id: 2,
+    name: "Structured Systems",
+    desc: "Planning, scheduling, and documentation that reduce site risk and protect project timelines.",
+    icons: shieldIcon,
+  },
+  {
+    id: 3,
+    name: "Seamless Integration",
+    desc: "Close coordination with builders, engineers, and contractors to maintain program flow.",
+    icons: rateIcon,
+  },
+  {
+    id: 4,
+    name: "Reliable Outcomes",
+    desc: "Work delivered as planned, on schedule, and supported by clear accountability.",
+    icons: goalIcon,
+  },
+];
+---
+
+<Layout
+  title="Civil & Drainage Services"
+  description="Civil and drainage works for residential, commercial, and development projects across Pakenham, Melbourne South East, and Victoria."
+  canonical="/services/civil-drainage"
+  ogImage={headerImage}
+  jsonLd={[
+    createBreadcrumbJsonLd([
+      { name: "Home", url: "/" },
+      { name: "Services", url: "/services" },
+      { name: "Civil & Drainage", url: "/services/civil-drainage" },
+    ]),
+    createServiceJsonLd({
+      name: "Civil & Drainage Services",
+      description:
+        "Civil drainage, stormwater, sewer, and underground services coordination for builders and developers across Pakenham, Melbourne South East, and Victoria.",
+      serviceType: "Civil drainage and underground services",
+      url: "/services/civil-drainage",
+    }),
+  ]}
+>
+  <Header
+    title={`<span class="font-bold">Civil & Drainage Services</span> <br/>
+for Residential, Commercial & Development Projects`}
+    img={headerImage}
+  />
+  <div class="">
+    <!-- Heading -->
+    <div
+      class="space-y-4 flex flex-col items-center justify-center border-b-2 border-white/10 py-14 lg:py-20 animate-fade-up"
+    >
+      <!-- <h2 class="text-center">Building Below the Surface</h2> -->
+      <p class="text-center w-[80%] lg:w-[800px]">
+        Strong construction outcomes start below ground. From our Pakenham base,
+        ProPlumb delivers civil and drainage services that support controlled,
+        predictable progress across Melbourne South East residential, medium density,
+        commercial, and development projects throughout Victoria.
+        <br />
+        <br />
+        Through disciplined planning, experienced delivery teams, and close coordination
+        with builders and engineers, we manage underground services in a way that
+        protects sequencing, maintains site safety, and supports overall project momentum.
+      </p>
+    </div>
+    <!-- End Heading -->
+
+    <div class="py-14 animate-fade-up">
+      <h2 class="text-center">What <span class="font-bold">We</span> Do</h2>
+    </div>
+
+    <!-- Services -->
+
+    {
+      residentialPlumbingServices.map((service) => (
+        // <!-- Service -->
+        <div
+          class:list={[
+            "max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 items-stretch bg-[#151515]",
+            service.id % 2 !== 0 ? "animate-fade-right" : "animate-fade-left",
+          ]}
+        >
+          {/* <!-- Image --> */}
+          <div
+            class={`h-auto lg:h-[680px]  overflow-hidden ${service.id % 2 !== 0 ? "order-1" : " lg:order-2"}`}
+          >
+            <Image
+              src={service.img}
+              alt={service.title.replace(/<[^>]*>/g, " ")}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              class="w-full h-full object-cover hover:scale-110 duration-300"
+            />
+          </div>
+          {/* <!-- Content --> */}
+          <div
+            class={`flex flex-col items-center justify-center py-14"  ${service.id % 2 !== 0 ? "order-2" : " lg:order-1"} `}
+          >
+            <div class="w-[70%] py-14">
+              <h3 set:html={service.title} />
+              <p class="pt-5" set:html={service.desc} />
+            </div>
+          </div>
+        </div>
+        // <!-- Service -->
+      ))
+    }
+    <!-- End Services -->
+    <section class="py-10 lg:py-14">
+      <div class="relative overflow-hidden bg-[#111111]">
+        <div class="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr]">
+          <div class="relative min-h-[260px] lg:min-h-[430px]">
+            <Image
+              src={disiplinedImage}
+              alt="Civil drainage trench works"
+              sizes="(min-width: 1024px) 52vw, 100vw"
+              class="h-full w-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-black/35 via-black/55 to-black"
+            >
+            </div>
+
+            <div
+              class="absolute inset-0 flex items-center justify-center px-6 text-center lg:justify-end lg:pr-10"
+            >
+              <h2 class="text-center md:text-end animate-fade-left">
+                A Disciplined Approach to <br />
+                <span class="font-bold">Civil & Drainage</span>
+              </h2>
+            </div>
+          </div>
+
+          <div
+            class="relative bg-black px-6 py-8 sm:px-8 lg:px-10 lg:py-12 flex flex-col items-start justify-center"
+          >
+            <p
+              class="text-[18px] leading-[1.25] text-white/95 max-w-xl animate-fade-right"
+            >
+              Civil and drainage scopes carry significant risk when planning or
+              sequencing is overlooked.
+            </p>
+
+            <p
+              class="mt-6 text-[18px] leading-[1.25] text-white/95 max-w-xl animate-fade-right [--reveal-delay:120ms]"
+            >
+              ProPlumb applies structured take-offs, capacity planning, and
+              clear staging to ensure underground works are delivered accurately
+              and on schedule. This approach reduces flow-on impacts and
+              supports predictable handovers for builders and site supervisors.
+            </p>
+
+            <p
+              class="mt-6 text-[18px] leading-[1.25] text-white/95 max-w-xl animate-fade-right [--reveal-delay:180ms]"
+            >
+              Our focus is dependable delivery that supports the entire build,
+              not just meeting minimum requirements.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto pt-0 pb-10 lg:pt-20 lg:pb-20 space-y-12">
+      <h2 class="text-center animate-fade-up">
+        Why Builders Choose <br />
+        <span class="font-bold">ProPlumb for Civil & Drainage</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
+        {
+          whyChoosUs.map((why) => (
+            <div class="bg-[#1C1C1C] flex flex-col p-8 gap-4 animate-fade-up">
+              <Image src={why.icons} alt={why.name} class="w-12 h-12" />
+              <h3 class="text-2xl">{why.name}</h3>
+              <p class="text-base">{why.desc}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+  <Cta
+    img={ctaImage}
+    title={`Looking for a <span class="font-bold">Civil & Drainage Partner</span> <br/>You Can Rely On?`}
+    desc={`If your project requires disciplined civil and drainage delivery that supports sequencing and site progress, ProPlumb offers the experience and systems to deliver with confidence.`}
+  />
+</Layout>

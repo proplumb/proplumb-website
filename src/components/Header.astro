@@ -1,0 +1,60 @@
+---
+import defaultImage from "../assets/images/showcase/factory.jpg";
+
+const { title, img, imgPosition } = Astro.props;
+const { subtitle } = Astro.props;
+const imageAlt =
+  typeof title === "string"
+    ? `${title
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()} hero image`
+    : "ProPlumb page hero image";
+const resolvedImageSource =
+  typeof img === "string" ? img.trim() : img?.src?.trim() || "";
+const imageSource = resolvedImageSource || defaultImage.src;
+const fallbackImageSource = defaultImage.src;
+
+const imagePosition =
+  imgPosition == "bottom"
+    ? "object-bottom"
+    : imgPosition == "top"
+      ? "object-top"
+      : imgPosition == "center"
+        ? "object-center"
+        : "object-center";
+---
+
+<div
+  class="relative flex flex-col items-center justify-center w-full min-h-[360px] overflow-hidden"
+>
+  <div
+    class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"
+  >
+  </div>
+  <div class="z-10 text-center px-6">
+    <h1
+      data-animate="lines"
+      data-animate-mobile="fade"
+      data-animate-tablet="fade"
+      set:html={title}
+    />
+    {
+      subtitle && (
+        <p
+          class="mt-3 text-base md:text-xl text-white/85 max-w-3xl mx-auto leading-snug"
+          data-animate="fade"
+          set:html={subtitle}
+        />
+      )
+    }
+  </div>
+  <img
+    src={imageSource}
+    alt={imageAlt}
+    class=`absolute inset-0 w-full h-full object-cover ${imagePosition}`
+    loading="eager"
+    decoding="async"
+    onerror={`this.onerror=null;this.src='${fallbackImageSource}'`}
+  />
+</div>

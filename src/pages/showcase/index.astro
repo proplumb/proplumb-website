@@ -1,0 +1,83 @@
+---
+import Header from "../../components/Header.astro";
+import Layout from "../../layouts/Layout.astro";
+import ShowcaseGrid from "../../components/ShowcaseGrid.astro";
+import { Image } from "astro:assets";
+import headerImage from "../../assets/images/proplumb_premium_residential_2_3_horizontal-3.webp";
+import consistentApproachImage from "../../assets/images/showcase/Industrial-Development-7B.webp";
+import Cta from "../../components/Cta.astro";
+import { createBreadcrumbJsonLd } from "../../lib/seo";
+---
+
+<Layout
+  title="Project Experience"
+  description="View ProPlumb project experience across residential, medium density, commercial, civil, drainage, and plumbing scopes."
+  canonical="/showcase"
+  ogImage={headerImage}
+  jsonLd={createBreadcrumbJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Projects", url: "/showcase" },
+  ])}
+>
+  <Header
+    title={`Project Experience Across <br/>
+<span class="font-bold">Residential, Commercial & Development Builds</span>`}
+    img={headerImage}
+    imgPosition="bottom"
+  />
+  <!-- Heading -->
+  <div
+    class="max-w-7xl mx-auto space-y-4 flex flex-col items-center justify-center border-b-2 border-white/10 py-14 lg:py-20 animate-fade-up"
+  >
+    <p class="text-center w-[80%] lg:max-w-7xl">
+      Our projects show how ProPlumb delivers work on site.
+      <br />
+      <br />
+      Across residential, medium density, commercial, and development builds, we apply
+      the same structured approach to planning, coordination, and delivery. Each project
+      demonstrates how disciplined sequencing, clear communication, and accountability
+      support predictable outcomes for builders and developers.
+    </p>
+  </div>
+  <!-- End Heading -->
+  <ShowcaseGrid />
+
+  <section class="px-4 pb-20">
+    <div
+      class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 items-stretch bg-[#151515] animate-fade-up"
+    >
+      <div class="px-8 py-12 lg:px-12 lg:py-16 flex flex-col justify-center">
+        <h2 class="text-[36px] leading-[1.05] font-light max-w-[480px]">
+          While each project differs in scope and complexity,<br />
+          <span class="font-bold">our approach remains consistent.</span>
+        </h2>
+
+        <p class="mt-6 text-white/70 leading-relaxed max-w-[460px]">
+          ProPlumb works closely with builders, engineers, and site teams to
+          manage sequencing, coordination, and delivery, ensuring work is
+          completed as planned and aligned with broader construction programs.
+        </p>
+
+        <p class="mt-6 text-white/70 leading-relaxed max-w-[460px]">
+          This consistency allows us to deliver across diverse project
+          environments while maintaining site safety, protecting program
+          timelines, and supporting compliant outcomes.
+        </p>
+      </div>
+
+      <div class="min-h-[360px] lg:min-h-[520px]">
+        <Image
+          src={consistentApproachImage}
+          alt="ProPlumb office exterior"
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          class="w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+  <Cta
+    img={import("../../assets/images/careers/img-19.webp")}
+    title={`Looking for a Partner with <br/> <span class="font-bold">Proven Project Experience?</span>`}
+    desc=`If you’re looking for a partner with the experience, systems, and people to support your next project reliably and on schedule, we’d welcome the conversation.`
+  />
+</Layout>

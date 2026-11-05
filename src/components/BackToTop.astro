@@ -1,0 +1,68 @@
+<button
+  type="button"
+  id="back-to-top"
+  class="fixed bottom-5 right-5 z-40 flex size-12 translate-y-4 items-center justify-center border border-white/20 bg-white text-black opacity-0 shadow-[0_16px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#d7f2ff] focus-visible:translate-y-0 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:bottom-8 md:right-8 md:size-14 cursor-pointer"
+  aria-label="Back to top"
+  aria-hidden="true"
+  tabindex="-1"
+>
+  <svg
+    class="size-5 md:size-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="m18 15-6-6-6 6"></path>
+  </svg>
+</button>
+
+<script>
+  type LenisLike = {
+    scrollTo?: (
+      target: number | string | HTMLElement,
+      options?: object,
+    ) => void;
+  };
+
+  declare global {
+    interface Window {
+      __PROPLUMB_LENIS__?: LenisLike;
+    }
+  }
+
+  const backToTopButton = document.getElementById("back-to-top");
+  const visibleOffset = 520;
+
+  const syncBackToTopVisibility = () => {
+    if (!backToTopButton) return;
+
+    const isVisible = window.scrollY > visibleOffset;
+
+    backToTopButton.classList.toggle("translate-y-4", !isVisible);
+    backToTopButton.classList.toggle("pointer-events-none", !isVisible);
+    backToTopButton.classList.toggle("opacity-0", !isVisible);
+    backToTopButton.classList.toggle("translate-y-0", isVisible);
+    backToTopButton.classList.toggle("opacity-100", isVisible);
+    backToTopButton.setAttribute("aria-hidden", String(!isVisible));
+    backToTopButton.toggleAttribute("tabindex", !isVisible);
+  };
+
+  backToTopButton?.classList.add("pointer-events-none");
+  syncBackToTopVisibility();
+
+  window.addEventListener("scroll", syncBackToTopVisibility, { passive: true });
+  window.addEventListener("resize", syncBackToTopVisibility);
+
+  backToTopButton?.addEventListener("click", () => {
+    if (window.__PROPLUMB_LENIS__?.scrollTo) {
+      window.__PROPLUMB_LENIS__.scrollTo(0);
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>

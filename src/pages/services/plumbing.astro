@@ -1,0 +1,237 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import headerImage from "../../assets/images/proplumb_premium_residential_2_3_horizontal.webp";
+import { Image } from "astro:assets";
+import serviceImage1 from "../../assets/images/showcase/Stockland-Evergreen-Development-Buildlab-Collaboration.webp";
+import serviceImage2 from "../../assets/images/proplumb_mediumdensity_evergreen_externalphotos.webp";
+import serviceImage3 from "../../assets/images/proplumb_premium_residential_2_3_horizontal-2.webp";
+import disiplinedImage from "../../assets/images/showcase/Custom-Build-22-Elgin Street,-Berwick..webp";
+import heartIcon from "../../assets/images/services/icons/heart-icon.png";
+import shieldIcon from "../../assets/images/services/icons/shiled-icon.png";
+import rateIcon from "../../assets/images/services/icons/rate-icon.png";
+import goalIcon from "../../assets/images/services/icons/goal-icon.png";
+import Cta from "../../components/Cta.astro";
+import ctaImage from "../../assets/images/proplumb_mediumdensity_evergreen_people (1).webp";
+import { createBreadcrumbJsonLd, createServiceJsonLd } from "../../lib/seo";
+
+const residentialPlumbingServices = [
+  {
+    id: 1,
+    title: "Volume Housing Plumbing",
+    desc: `We deliver plumbing services across large-scale residential programs, supporting builders who require consistency, speed, and repeatable outcomes.
+<br/> <br/>    Our approach focuses on managing volume effectively, maintaining quality across every home, and aligning plumbing stages with broader site schedules.
+`,
+    img: serviceImage1,
+  },
+  {
+    id: 2,
+    title: `Medium Density & <br> Multi-Unit Plumbing`,
+    desc: `Medium density projects require tighter coordination across multiple dwellings and shared services. <br/><br/>
+ProPlumb manages plumbing delivery for townhouses and multi-unit developments through accurate design interpretation, coordinated service connections, and sequencing that reduces clashes between trades
+`,
+    img: serviceImage2,
+  },
+  {
+    id: 3,
+    title: "High-End Residential Plumbing",
+    desc: `High-end residential projects demand greater attention to detail, tighter coordination, and flexibility as designs evolve. <br/> <br/>
+ProPlumb supports premium and architecturally designed homes through structured planning and responsive site coordination. Variations, custom requirements, and design changes are managed clearly and accounted for, ensuring quality outcomes without disrupting the broader build program.
+`,
+    img: serviceImage3,
+  },
+];
+
+const whyChoosUs = [
+  {
+    id: 1,
+    name: "Built for Scale",
+    desc: "Systems and resourcing designed to support multiple sites and build stages concurrently.",
+    icons: heartIcon,
+  },
+  {
+    id: 2,
+    name: "Sequencing Discipline",
+    desc: "Plumbing scheduled to align with construction programs, not disrupt them.",
+    icons: shieldIcon,
+  },
+  {
+    id: 3,
+    name: "Site-Level Coordination",
+    desc: "Clear communication with site supervisors to keep work moving as planned.",
+    icons: rateIcon,
+  },
+  {
+    id: 4,
+    name: "Consistent Outcomes",
+    desc: "Quality and delivery maintained across every home, not just the first.",
+    icons: goalIcon,
+  },
+];
+---
+
+<Layout
+  title="Plumbing Services for Builders & Developers"
+  description="Structured plumbing delivery for builders and developers across Pakenham, Melbourne South East, and Victoria build sites."
+  canonical="/services/plumbing"
+  ogImage={headerImage}
+  jsonLd={[
+    createBreadcrumbJsonLd([
+      { name: "Home", url: "/" },
+      { name: "Services", url: "/services" },
+      { name: "Plumbing", url: "/services/plumbing" },
+    ]),
+    createServiceJsonLd({
+      name: "Plumbing Services for Builders & Developers",
+      description:
+        "Structured plumbing delivery for volume housing, medium density, multi-unit, and high-end residential projects across Pakenham, Melbourne South East, and Victoria.",
+      serviceType: "Residential and development plumbing",
+      url: "/services/plumbing",
+    }),
+  ]}
+>
+  <Header
+    title={`<span class="font-bold">Plumbing Services</span> <br/> 
+for Residential & Development Projects`}
+    img={headerImage}
+  />
+  <div class="">
+    <!-- Heading -->
+    <div
+      class="space-y-4 flex flex-col items-center justify-center border-b-2 border-white/10 py-14 lg:py-20 animate-fade-up"
+    >
+      <p class="text-center w-[80%] lg:w-[800px]">
+        ProPlumb delivers structured plumbing services across residential
+        construction, supporting builders and developers from Pakenham through
+        Melbourne South East and wider Victoria in volume housing, medium
+        density, and high-end residential projects.
+        <br />
+        <br />
+        Our plumbing capability is designed to support consistent site progress through
+        clear sequencing, coordinated delivery, disciplined planning, and adherence
+        to site safety requirements.
+      </p>
+    </div>
+    <!-- End Heading -->
+
+    <div class="py-14 animate-fade-up">
+      <h2 class="text-center">What <span class="font-bold"> We</span> Do</h2>
+    </div>
+
+    <!-- Services -->
+    {
+      residentialPlumbingServices.map((service) => (
+        // <!-- Service -->
+        <div
+          class:list={[
+            "max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 items-stretch bg-[#151515]",
+            service.id % 2 !== 0 ? "animate-fade-right" : "animate-fade-left",
+          ]}
+        >
+          {/* <!-- Image --> */}
+          <div
+            class={`h-auto lg:h-[680px] overflow-hidden ${service.id % 2 !== 0 ? "order-1" : " lg:order-2"}`}
+          >
+            <Image
+              src={service.img}
+              alt={service.title.replace(/<[^>]*>/g, " ")}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              class="w-full h-full object-cover hover:scale-110 duration-300"
+            />
+          </div>
+          {/* <!-- Content --> */}
+          <div
+            class={`flex flex-col items-center justify-center py-14"  ${service.id % 2 !== 0 ? "order-2" : " lg:order-1"} `}
+          >
+            <div class="w-[70%] py-14">
+              <h3 set:html={service.title} />
+              <p class="pt-5" set:html={service.desc} />
+            </div>
+          </div>
+        </div>
+        // <!-- Service -->
+      ))
+    }
+    <!-- End Services -->
+
+    <section class="py-10 lg:py-14">
+      <div class="relative overflow-hidden bg-[#111111]">
+        <div class="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr]">
+          <div class="relative min-h-[260px] lg:min-h-[430px]">
+            <Image
+              src={disiplinedImage}
+              alt="Civil drainage trench works"
+              sizes="(min-width: 1024px) 52vw, 100vw"
+              class="h-full w-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-black/35 via-black/55 to-black"
+            >
+            </div>
+
+            <div
+              class="absolute inset-0 flex items-center justify-center px-6 text-center lg:justify-end lg:pr-10"
+            >
+              <h2 class="text-center md:text-end animate-fade-left">
+                How We Deliver Plumbing on <br />
+                <span class="font-bold">Active Build Sites</span>
+              </h2>
+            </div>
+          </div>
+
+          <div
+            class="relative bg-black px-6 py-8 sm:px-8 lg:px-10 lg:py-12 flex flex-col items-start justify-center"
+          >
+            <p
+              class="text-[18px] leading-[1.25] text-white/95 max-w-xl animate-fade-right"
+            >
+              Plumbing is one of the most sequence-dependent trades on a
+              construction site.
+            </p>
+
+            <p
+              class="mt-6 text-[18px] leading-[1.25] text-white/95 max-w-xl animate-fade-right [--reveal-delay:120ms]"
+            >
+              ProPlumb plans plumbing works around build stages, trade
+              interfaces, and site capacity to avoid congestion and rework. Our
+              teams are scheduled to support progress across slabs, frames,
+              rough-ins, and fit-offs, rather than reacting to issues after they
+              occur.
+            </p>
+
+            <p
+              class="mt-6 text-[18px] leading-[1.25] text-white/95 max-w-xl animate-fade-right [--reveal-delay:180ms]"
+            >
+              This structured approach helps builders maintain momentum across
+              projects while protecting timelines and quality.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto pt-0 pb-10 lg:pt-20 lg:pb-20 space-y-12">
+      <h2 class="text-center animate-fade-up">
+        Why Builders Choose <br />
+        <span class="font-bold">ProPlumb for Plumbing</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
+        {
+          whyChoosUs.map((why) => (
+            <div class="bg-[#1C1C1C] flex flex-col p-8 gap-4 animate-fade-up">
+              <Image src={why.icons} alt={why.name} class="w-12 h-12" />
+              <h3 class="text-2xl">{why.name}</h3>
+              <p class="text-base">{why.desc}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+  <Cta
+    img={ctaImage}
+    title={`Looking for a <span class="font-bold">Plumbing Partner Who Can Support Your Build Program?</span>`}
+    desc={`If you’re managing residential or multi-unit construction and need plumbing delivered with structure, clarity, and control, ProPlumb offers the experience and systems to support your program.`}
+  />
+</Layout>

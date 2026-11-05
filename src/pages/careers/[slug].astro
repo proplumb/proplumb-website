@@ -1,0 +1,761 @@
+---
+export const prerender = false;
+
+import Layout from "../../layouts/Layout.astro";
+import defaultHero from "../../assets/images/proplumb_civildrainage_thewlissrd_onsite_works.webp";
+import Header from "../../components/Header.astro";
+import OpenPositionsSection from "../../components/Careers/OpenPositionsSection.astro";
+import Cta from "../../components/Cta.astro";
+import FormStatusModal from "../../components/forms/FormStatusModal.astro";
+import { CAREER_APPLICATION_ALLOWED_EXTENSIONS } from "../../lib/forms/careerApplication";
+import {
+  createBreadcrumbJsonLd,
+  toAbsoluteUrl,
+  type JsonLdObject,
+} from "../../lib/seo";
+
+interface CareerApiItem {
+  id: number;
+  slug: string;
+  link?: string;
+  featured_media?: number;
+  jetpack_featured_media_url?: string;
+  better_featured_image?: FeaturedMediaItem;
+  yoast_head_json?: {
+    og_image?: Array<{ url?: string }>;
+  };
+  title?: {
+    rendered?: string;
+  };
+  _embedded?: {
+    "wp:featuredmedia"?: FeaturedMediaItem[];
+  };
+  acf?: {
+    location?: string;
+    short_description?: string;
+    description?: string;
+    employment_type?: string | string[];
+    salary?: number | string;
+    [key: string]: unknown;
+  };
+}
+
+interface CareerPageData {
+  slug: string;
+  title: string;
+  shortDescription: string;
+  description: string;
+  location: string;
+  employmentType: string;
+  salary: string;
+  featuredImage: string;
+}
+
+interface WpMediaItem {
+  source_url?: string;
+  guid?: {
+    rendered?: string;
+  };
+  media_details?: {
+    sizes?: Record<string, { source_url?: string }>;
+  };
+}
+
+interface FeaturedMediaItem {
+  source_url?: string;
+  guid?: {
+    rendered?: string;
+  };
+  media_details?: {
+    sizes?: Record<string, { source_url?: string }>;
+  };
+}
+
+const WORDPRESS_API_BASE_URL = "https://careers.proplumb.com.au";
+const WORDPRESS_REQUEST_TIMEOUT_MS = 12000;
+const slugParam = (Astro.params.slug || "").trim();
+
+const stripTrailingSlash = (url: string) => url.replace(/\/+$/, "");
+const decodeHtml = (value: string) =>
+  value
+    .replace(/&#038;/g, "&")
+    .replace(/&#8211;/g, "–")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'");
+
+const toNumber = (value: number | string | undefined) => {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+};
+
+const formatSalary = (value: number | string | undefined) => {
+  const salary = toNumber(value);
+  return salary !== null ? salary.toLocaleString("en-AU") : "Negotiable";
+};
+
+const normalizeFeaturedImageUrl = (
+  url: string | undefined,
+  activeApiBaseUrl: string,
+) => {
+  if (!url?.trim()) return "";
+  let normalized = decodeHtml(url.trim()).replace(/\\\//g, "/");
+
+  if (normalized.startsWith("data:image/")) {
+    return normalized;
+  }
+
+  if (normalized.startsWith("//")) {
+    normalized = `https:${normalized}`;
+  } else if (normalized.startsWith("/")) {
+    normalized = `${stripTrailingSlash(activeApiBaseUrl)}${normalized}`;
+  } else if (!/^https?:\/\//i.test(normalized)) {
+    normalized = `${stripTrailingSlash(activeApiBaseUrl)}/${normalized.replace(/^\/+/, "")}`;
+  }
+
+  if (normalized.startsWith("http://")) {
+    normalized = normalized.replace("http://", "https://");
+  }
+
+  try {
+    return encodeURI(normalized);
+  } catch {
+    return normalized;
+  }
+};
+
+async function fetchJsonWithTimeout<T>(url: string): Promise<T> {
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(
+    () => abortController.abort(),
+    WORDPRESS_REQUEST_TIMEOUT_MS,
+  );
+
+  try {
+    const response = await fetch(url, {
+      headers: { Accept: "application/json" },
+      signal: abortController.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed. Status: ${response.status}`);
+    }
+
+    return (await response.json()) as T;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+async function fetchTextWithTimeout(url: string): Promise<string> {
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(
+    () => abortController.abort(),
+    WORDPRESS_REQUEST_TIMEOUT_MS,
+  );
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      },
+      signal: abortController.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed. Status: ${response.status}`);
+    }
+
+    return await response.text();
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const extractMediaUrl = (
+  media: WpMediaItem | FeaturedMediaItem | undefined,
+  activeApiBaseUrl: string,
+) => {
+  if (!media) return "";
+
+  const orderedCandidates = [
+    media.source_url,
+    media.media_details?.sizes?.full?.source_url,
+    media.media_details?.sizes?.large?.source_url,
+    media.media_details?.sizes?.medium_large?.source_url,
+    media.media_details?.sizes?.medium?.source_url,
+    media.guid?.rendered,
+  ];
+
+  for (const candidate of orderedCandidates) {
+    const normalized = normalizeFeaturedImageUrl(candidate, activeApiBaseUrl);
+    if (normalized) return normalized;
+  }
+
+  if (media.media_details?.sizes) {
+    for (const sizeValue of Object.values(media.media_details.sizes)) {
+      const normalized = normalizeFeaturedImageUrl(
+        sizeValue?.source_url,
+        activeApiBaseUrl,
+      );
+      if (normalized) return normalized;
+    }
+  }
+
+  return "";
+};
+
+const extractImageFromUnknown = (
+  value: unknown,
+  activeApiBaseUrl: string,
+  depth = 0,
+): string => {
+  if (depth > 4 || value == null) return "";
+
+  if (typeof value === "string") {
+    const normalized = normalizeFeaturedImageUrl(value, activeApiBaseUrl);
+    if (
+      normalized &&
+      /(wp-content\/uploads|\.png($|\?)|\.jpe?g($|\?)|\.webp($|\?)|\.gif($|\?)|\.svg($|\?))/i.test(
+        normalized,
+      )
+    ) {
+      return normalized;
+    }
+    return "";
+  }
+
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      const nested = extractImageFromUnknown(
+        entry,
+        activeApiBaseUrl,
+        depth + 1,
+      );
+      if (nested) return nested;
+    }
+    return "";
+  }
+
+  if (!isRecord(value)) return "";
+
+  const commonImageKeys = [
+    "url",
+    "source_url",
+    "guid",
+    "sizes",
+    "full",
+    "large",
+    "medium",
+    "thumbnail",
+  ];
+  for (const key of commonImageKeys) {
+    if (key in value) {
+      const nested = extractImageFromUnknown(
+        value[key],
+        activeApiBaseUrl,
+        depth + 1,
+      );
+      if (nested) return nested;
+    }
+  }
+
+  for (const nestedValue of Object.values(value)) {
+    const nested = extractImageFromUnknown(
+      nestedValue,
+      activeApiBaseUrl,
+      depth + 1,
+    );
+    if (nested) return nested;
+  }
+
+  return "";
+};
+
+const extractImageFromAcf = (
+  acf: CareerApiItem["acf"] | undefined,
+  activeApiBaseUrl: string,
+) => {
+  if (!acf) return "";
+
+  const preferredFieldNames = [
+    "featured_image",
+    "feature_image",
+    "image",
+    "hero_image",
+    "career_image",
+    "banner_image",
+  ];
+
+  for (const fieldName of preferredFieldNames) {
+    const candidate = extractImageFromUnknown(acf[fieldName], activeApiBaseUrl);
+    if (candidate) return candidate;
+  }
+
+  return extractImageFromUnknown(acf, activeApiBaseUrl);
+};
+
+const extractImageFromHtml = (html: string, activeApiBaseUrl: string) => {
+  const patterns = [
+    /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["'][^>]*>/i,
+    /<figure[^>]*wp-block-post-featured-image[\s\S]*?<img[^>]+src=["']([^"']+)["'][^>]*>/i,
+    /<img[^>]+class=["'][^"']*wp-post-image[^"']*["'][^>]+src=["']([^"']+)["'][^>]*>/i,
+    /<img[^>]+src=["']([^"']+)["'][^>]+class=["'][^"']*wp-post-image[^"']*["'][^>]*>/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+    const candidate = normalizeFeaturedImageUrl(match?.[1], activeApiBaseUrl);
+    if (candidate) return candidate;
+  }
+
+  return "";
+};
+
+const resolveFeaturedImage = async (
+  career: CareerApiItem,
+  activeApiBaseUrl: string,
+) => {
+  const topLevelCandidates = [
+    career.jetpack_featured_media_url,
+    career.better_featured_image?.source_url,
+    career.yoast_head_json?.og_image?.[0]?.url,
+  ];
+
+  for (const candidate of topLevelCandidates) {
+    const normalized = normalizeFeaturedImageUrl(candidate, activeApiBaseUrl);
+    if (normalized) return normalized;
+  }
+
+  const betterFeaturedImageUrl = extractMediaUrl(
+    career.better_featured_image,
+    activeApiBaseUrl,
+  );
+  if (betterFeaturedImageUrl) return betterFeaturedImageUrl;
+
+  const embeddedUrl = extractMediaUrl(
+    career._embedded?.["wp:featuredmedia"]?.[0],
+    activeApiBaseUrl,
+  );
+
+  if (embeddedUrl) return embeddedUrl;
+
+  const mediaId = career.featured_media;
+  if (typeof mediaId === "number" && mediaId > 0) {
+    try {
+      const media = await fetchJsonWithTimeout<WpMediaItem>(
+        `${activeApiBaseUrl}/wp-json/wp/v2/media/${mediaId}`,
+      );
+      const mediaUrl = extractMediaUrl(media, activeApiBaseUrl);
+      if (mediaUrl) return mediaUrl;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      if (!message.includes("Status: 401")) {
+        console.error(
+          `Failed to fetch media ${mediaId} for career ${career.slug}`,
+          error,
+        );
+      }
+    }
+  }
+
+  const acfImage = extractImageFromAcf(career.acf, activeApiBaseUrl);
+  if (acfImage) return acfImage;
+
+  if (career.link) {
+    try {
+      const html = await fetchTextWithTimeout(career.link);
+      const htmlImage = extractImageFromHtml(html, activeApiBaseUrl);
+      if (htmlImage) return htmlImage;
+    } catch (error) {
+      console.error(
+        `Failed to fetch career page HTML for ${career.slug}`,
+        error,
+      );
+    }
+  }
+
+  return defaultHero.src;
+};
+
+if (!slugParam) {
+  return Astro.redirect("/careers");
+}
+
+const normalizedApiBase = stripTrailingSlash(WORDPRESS_API_BASE_URL);
+const apiBaseCandidates = [normalizedApiBase];
+if (normalizedApiBase.startsWith("https://")) {
+  apiBaseCandidates.push(normalizedApiBase.replace("https://", "http://"));
+}
+
+let activeApiBaseUrl = normalizedApiBase;
+let currentCareer: CareerApiItem | null = null;
+let lastError: unknown;
+
+for (const baseUrl of [...new Set(apiBaseCandidates)]) {
+  try {
+    const records = await fetchJsonWithTimeout<CareerApiItem[]>(
+      `${baseUrl}/wp-json/wp/v2/job?slug=${encodeURIComponent(slugParam)}&_embed&acf_format=standard`,
+    );
+
+    if (Array.isArray(records) && records.length) {
+      currentCareer = records[0];
+      activeApiBaseUrl = stripTrailingSlash(baseUrl);
+      break;
+    }
+  } catch (error) {
+    lastError = error;
+  }
+}
+
+if (!currentCareer) {
+  if (lastError) {
+    console.error(
+      "Unable to load career details from WordPress API.",
+      lastError,
+    );
+  }
+  return Astro.redirect("/careers");
+}
+
+const career: CareerPageData = {
+  slug: currentCareer.slug,
+  title: decodeHtml(currentCareer.title?.rendered?.trim() || "Untitled Role"),
+  shortDescription: currentCareer.acf?.short_description?.trim() || "",
+  description: currentCareer.acf?.description?.trim() || "",
+  location: currentCareer.acf?.location?.trim() || "Location not specified",
+  employmentType: Array.isArray(currentCareer.acf?.employment_type)
+    ? currentCareer.acf.employment_type.filter(Boolean).join(", ") || "Not specified"
+    : currentCareer.acf?.employment_type?.trim() || "Not specified",
+  salary: formatSalary(currentCareer.acf?.salary),
+  featuredImage: await resolveFeaturedImage(currentCareer, activeApiBaseUrl),
+};
+
+const resolvedCareerImage = career.featuredImage?.trim() || defaultHero.src;
+const careerDescription =
+  career.description ||
+  career.shortDescription ||
+  `Apply for the ${career.title} role at ProPlumb.`;
+const jobPostingJsonLd: JsonLdObject = {
+  "@context": "https://schema.org",
+  "@type": "JobPosting",
+  title: career.title,
+  description: careerDescription,
+  employmentType:
+    career.employmentType === "Not specified" ? undefined : career.employmentType,
+  directApply: true,
+  url: toAbsoluteUrl(`/careers/${career.slug}`),
+  hiringOrganization: {
+    "@type": "Organization",
+    name: "ProPlumb",
+    sameAs: "https://proplumb.com.au",
+  },
+  jobLocation:
+    career.location === "Location not specified"
+      ? undefined
+      : {
+          "@type": "Place",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: career.location,
+            addressCountry: "AU",
+          },
+        },
+};
+---
+
+<Layout
+  title={`${career.title} Careers`}
+  description={careerDescription}
+  canonical={`/careers/${career.slug}`}
+  ogImage={resolvedCareerImage}
+  jsonLd={[
+    createBreadcrumbJsonLd([
+      { name: "Home", url: "/" },
+      { name: "Careers", url: "/careers" },
+      { name: career.title, url: `/careers/${career.slug}` },
+    ]),
+    jobPostingJsonLd,
+  ]}
+>
+  <Header
+    title={`Apply for <span class="font-bold">${career.title}</span>`}
+    img={resolvedCareerImage}
+  />
+
+  <main class="bg-black text-white">
+    <section class="px-4 py-16 md:py-20">
+      <div class="mx-auto max-w-6xl">
+        <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div class="p-6 md:p-8 animate-fade-right">
+            <h2 class="text-[44px] leading-[0.95] text-white">
+              {career.title}
+            </h2>
+            {
+              career.shortDescription && (
+                <p class="mt-4 text-sm leading-relaxed text-white/80 md:text-base">
+                  {career.shortDescription}
+                </p>
+              )
+            }
+            <p class="mt-3 text-[12px] leading-relaxed text-white/70">
+              {career.location} • {career.employmentType} • Salary: {
+                career.salary
+              }
+            </p>
+            {
+              career.description && (
+                <div
+                  class="mt-4 text-sm leading-relaxed text-white/80 md:text-base [&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-1"
+                  set:html={career.description}
+                />
+              )
+            }
+
+            <form class="mt-6 space-y-3" data-career-form novalidate>
+              <div class="sr-only" aria-hidden="true">
+                <label for="website">Website</label>
+                <input
+                  id="website"
+                  name="website"
+                  type="text"
+                  tabindex="-1"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="space-y-2">
+                <label
+                  for="roleTitle"
+                  class="text-sm uppercase tracking-wide text-white"
+                >
+                  Role Title
+                </label>
+                <input
+                  id="roleTitle"
+                  name="roleTitle"
+                  type="text"
+                  value={career.title}
+                  readonly
+                  class="h-12 w-full border border-transparent bg-white/10 px-4 text-sm text-white/75 focus:outline-none"
+                />
+                <p
+                  class="min-h-5 text-sm text-[#FF8E8E]"
+                  data-error-for="roleTitle"
+                >
+                </p>
+              </div>
+              <div class="space-y-2">
+                <label
+                  for="career-cv-upload"
+                  class="text-sm uppercase tracking-wide text-white"
+                >
+                  Upload CV
+                </label>
+                <label
+                  for="career-cv-upload"
+                  class="grid h-12 cursor-pointer grid-cols-[1fr_82px] overflow-hidden border border-transparent bg-white/10 transition-colors"
+                  data-error-target-for="cv"
+                >
+                  <span
+                    id="career-cv-filename"
+                    class="flex items-center bg-[#1f2024] px-4 text-[15px] text-white/45"
+                  >
+                    Choose your cv
+                  </span>
+                  <span
+                    class="flex items-center justify-center bg-white text-black"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      ><path
+                        d="m21.67 14.3-.4 5c-.15 1.53-.27 2.7-2.98 2.7H5.71C3 22 2.88 20.83 2.73 19.3l-.4-5c-.08-.83.18-1.6.65-2.19l.02-.02C3.55 11.42 4.38 11 5.31 11h13.38c.93 0 1.75.42 2.29 1.07.01.01.02.02.02.03.49.59.76 1.36.67 2.2Z"
+                        stroke="#000000"
+                        stroke-width="1.5"
+                        stroke-miterlimit="10"></path><path
+                        d="M3.5 11.43V6.28c0-3.4.85-4.25 4.25-4.25h1.27c1.27 0 1.56.38 2.04 1.02l1.27 1.7c.32.42.51.68 1.36.68h2.55c3.4 0 4.25.85 4.25 4.25v1.79M9.43 17h5.14"
+                        stroke="#000000"
+                        stroke-width="1.5"
+                        stroke-miterlimit="10"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"></path></svg
+                    >
+                  </span>
+                </label>
+                <input
+                  id="career-cv-upload"
+                  name="cv"
+                  type="file"
+                  accept={CAREER_APPLICATION_ALLOWED_EXTENSIONS.join(",")}
+                  class="sr-only"
+                />
+                <p class="min-h-5 text-sm text-[#FF8E8E]" data-error-for="cv">
+                </p>
+              </div>
+
+              <div class="space-y-2">
+                <label
+                  for="message"
+                  class="text-sm uppercase tracking-wide text-white"
+                >
+                  Message / Cover Letter
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  placeholder="Tell us why you're a good fit for this role."
+                  class="w-full resize-none border border-transparent bg-white/10 p-4 text-sm text-white placeholder:text-white/55 focus:outline-none focus:ring-1 focus:ring-white/30"
+                ></textarea>
+                <p
+                  class="min-h-5 text-sm text-[#FF8E8E]"
+                  data-error-for="message"
+                >
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                class="h-11 w-full border border-white bg-white text-sm text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                data-submit-button
+              >
+                Submit
+              </button>
+            </form>
+          </div>
+
+          <div class="overflow-hidden bg-[#101010] animate-fade-left">
+            <img
+              src={resolvedCareerImage}
+              alt={career.title}
+              class="h-full min-h-[340px] w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              onerror={`this.onerror=null;this.src='${defaultHero.src}'`}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <OpenPositionsSection excludeSlug={career.slug} />
+  </main>
+
+  <FormStatusModal />
+
+  <Cta
+    title={`Interested in Working with <span class="font-bold">ProPlumb?</span>`}
+    desc={`If you’re looking for a partner with the experience, systems, and people to support your next project reliably and on schedule, we’d welcome the conversation.`}
+  />
+</Layout>
+
+<script>
+  import {
+    CAREER_APPLICATION_MAX_FILE_SIZE_BYTES,
+    isAllowedCareerCvFile,
+  } from "../../lib/forms/careerApplication";
+  import {
+    createStatusModal,
+    setupAsyncForm,
+  } from "../../scripts/forms/asyncForm";
+
+  const form = document.querySelector("[data-career-form]");
+  const submitButton = document.querySelector("[data-submit-button]");
+  const cvInput = document.getElementById("career-cv-upload");
+  const cvFilename = document.getElementById("career-cv-filename");
+
+  const syncCvFilename = () => {
+    if (
+      !(cvInput instanceof HTMLInputElement) ||
+      !(cvFilename instanceof HTMLElement)
+    ) {
+      return;
+    }
+
+    const fileName = cvInput.files?.[0]?.name || "Choose your cv";
+    cvFilename.textContent = fileName;
+    cvFilename.classList.toggle("text-white/45", !cvInput.files?.length);
+    cvFilename.classList.toggle("text-white", !!cvInput.files?.length);
+  };
+
+  if (cvInput instanceof HTMLInputElement) {
+    cvInput.addEventListener("change", syncCvFilename);
+  }
+
+  if (
+    form instanceof HTMLFormElement &&
+    submitButton instanceof HTMLButtonElement
+  ) {
+    const modal = createStatusModal();
+
+    setupAsyncForm({
+      form,
+      submitButton,
+      endpoint: "/api/careers/apply",
+      payloadType: "form-data",
+      successState: {
+        kicker: "Application",
+        title: "Sent Successfully",
+        message:
+          "Your application has been sent to our team. We’ll review it and get back to you if there’s a fit.",
+      },
+      errorState: {
+        kicker: "Something went",
+        title: "Wrong",
+        message:
+          "We couldn’t send your application right now. Please try again in a moment.",
+      },
+      fieldRules: {
+        roleTitle: {
+          validate: (field) =>
+            field.value.trim()
+              ? ""
+              : "The role title is missing. Please refresh and try again.",
+        },
+        cv: {
+          eventName: "change",
+          validate: (field) => {
+            if (!(field instanceof HTMLInputElement)) {
+              return "Please upload your CV.";
+            }
+
+            const file = field.files?.[0];
+            if (!file) {
+              return "Please upload your CV.";
+            }
+
+            if (!isAllowedCareerCvFile(file)) {
+              return "Please upload a PDF, DOC, or DOCX file.";
+            }
+
+            if (file.size > CAREER_APPLICATION_MAX_FILE_SIZE_BYTES) {
+              return "Please upload a file smaller than 5MB.";
+            }
+
+            return "";
+          },
+        },
+        message: {
+          validate: (field) =>
+            field.value.trim().length >= 10
+              ? ""
+              : "Please enter at least 10 characters.",
+        },
+      },
+      modal,
+      onAfterReset: syncCvFilename,
+    });
+  }
+</script>

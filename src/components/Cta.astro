@@ -1,0 +1,65 @@
+---
+import Image from "astro/components/Image.astro";
+const { img, title, desc, imgPosition = "top" } = Astro.props;
+const { buttonText, buttonHref } = Astro.props;
+
+const imagePosition =
+  imgPosition == "bottom"
+    ? "object-bottom"
+    : imgPosition == "top"
+      ? "object-top"
+      : imgPosition == "center"
+        ? "object-center"
+        : "object-center";
+---
+
+<section class="relative bg-primary py-40 z-30 overflow-hidden">
+  <!-- Background Image -->
+  <div class="absolute inset-0">
+    <Image
+      src={img || import("../assets/images/cta/cta.png")}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      sizes="100vw"
+      class={`w-full h-full object-cover ${imagePosition}`}
+    />
+    <!-- Dark Overlay -->
+    <div class="absolute inset-0 bg-black/60"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="container px-10 mx-auto relative z-10 text-center">
+    <div class="max-w-4xl mx-auto flex flex-col items-center gap-6">
+      <!-- Heading -->
+      <h2
+        class=""
+        data-animate="lines"
+        data-animate-mobile="fade"
+        data-animate-tablet="fade"
+        set:html={title ||
+          `Ready to Build with the <br/> <span class="font-bold">Civil, Drainage & Plumbing</span> <br/>Professionals?`}
+      />
+
+      <!-- Description -->
+      <p
+        class="text-gray-200 leading-relaxed max-w-3xl text-center"
+        data-animate="fade"
+      >
+        {
+          desc ||
+            `If you’re looking for a partner who delivers reliable, well-planned plumbing and civil solutions, consistently and on schedule, we’d welcome the conversation.`
+        }
+      </p>
+
+      <!-- CTA Button -->
+      <a
+        href={buttonHref || "/contact"}
+        data-animate="fade"
+        class="bg-white text-black px-6 py-2 lg:px-8 lg:py-4 font-medium text-base lg:text-lg hover:bg-gray-100 transition-colors duration-300 cursor-pointer inline-block"
+      >
+        {buttonText || "Start the Conversation"}
+      </a>
+    </div>
+  </div>
+</section>

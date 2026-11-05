@@ -1,0 +1,35 @@
+---
+import Hero from "../components/Hero.astro";
+import Services from "../components/Services.astro";
+import TrustedBy from "../components/TrustedBy.astro";
+import Awards from "../components/Awards.astro";
+import Layout from "../layouts/Layout.astro";
+import AboutUs from "../components/AboutUs.astro";
+import Pillars from "../components/Pillars.astro";
+import Showcase from "../components/Showcase.astro";
+import Testimonials from "../components/Testimonials.astro";
+import Cta from "../components/Cta.astro";
+import ctaImage from "../assets/images/proplumb_mediumdensity_evergreen.webp";
+import ogImage from "../assets/images/proplumb_civildrainage_thewlissrd_onsite_works.webp";
+---
+
+<Layout
+  title="Civil, Drainage & Plumbing Professionals"
+  description="ProPlumb delivers civil, drainage, and plumbing solutions for builders and developers across residential, commercial, and development projects in Victoria."
+  canonical="/"
+  ogImage={ogImage}
+>
+  <Hero />
+  <TrustedBy />
+  <Services />
+  <Awards />
+  <AboutUs />
+  <Pillars />
+  <Showcase />
+  <Testimonials />
+  <Cta
+    img={ctaImage}
+    title={`Ready to Work with a <br/> <span class="font-bold">Structured Plumbing</span> <br/>& Civil Team?`}
+    desc={`If you’re looking for a partner who values planning, communication, and reliable delivery, we’d welcome the conversation.`}
+  />
+</Layout>

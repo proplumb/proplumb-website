@@ -1,0 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&display=swap");
+@import "tailwindcss";
+
+/* Theme Styles */
+@theme {
+  --font-script: "Manrope", sans-serif;
+
+  --color-primary: #000;
+  --color-secondary: #fff;
+}
+
+/* Base Styles for components and elements */
+@layer base {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  @supports not (overflow: clip) {
+    html,
+    body {
+      overflow-x: hidden;
+    }
+  }
+
+  body {
+    @apply font-script;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl leading-[1.2] tracking-[0px] font-light text-secondary;
+  }
+
+  h2 {
+    @apply text-3xl md:text-3xl lg:text-5xl leading-[30px] lg:leading-[48px] tracking-[-2px] font-light text-secondary;
+  }
+  h3 {
+    @apply text-2xl md:text-2xl lg:text-4xl leading-[24px] lg:leading-[36px] font-light text-secondary;
+  }
+
+  p {
+    @apply text-base md:text-lg lg:text-xl leading-[24px]  font-light text-secondary;
+  }
+
+  .prose h1 {
+    @apply text-3xl mb-6 leading-relaxed;
+  }
+
+  .prose h2 {
+    @apply text-2xl  mb-4  leading-relaxed tracking-normal;
+  }
+
+  .prose h3 {
+    @apply text-xl mb-3  leading-relaxed;
+  }
+
+  .prose p {
+    @apply leading-relaxed;
+  }
+
+  .prose ul {
+    @apply list-disc list-inside;
+  }
+
+  .prose li {
+    @apply text-white;
+  }
+}

@@ -1,0 +1,252 @@
+---
+import Image from "astro/components/Image.astro";
+
+const testimonials = [
+  {
+    quote: "ProPlumb keeps our projects moving. Structured systems, clear communication, and zero surprises.",
+    author: "Builder Supervisor, Metricon"
+  },
+  {
+    quote: "Their drainage and plumbing teams deliver consistent quality across every site. It's why we've worked with them for over a decade.",
+    author: "Project Manager, SJD Homes"
+  },
+  {
+    quote: "Our factory's water lines were replaced ahead of schedule and without disrupting production. ProPlumb handled everything with precision and safety in mind.",
+    author: "Karen S., ABN Group"
+  }
+];
+
+const carouselTestimonials = [...testimonials, ...testimonials];
+---
+
+<section class="relative bg-primary py-14 z-30">
+  <div class="container px-10 mx-auto flex flex-col items-center gap-14">
+    <!-- Header -->
+    <div class="text-center">
+      <h2
+        class="text-center animate-fade-up"
+      >
+        What Our Client Say<br />
+        <span class="font-medium">About Us</span>
+      </h2>
+    </div>
+
+    <!-- Testimonials Carousel -->
+    <div class="testimonial-carousel-wrap relative w-full max-w-7xl animate-fade-up [--reveal-delay:140ms]">
+      <div class="swiper testimonial-swiper">
+        <div class="swiper-wrapper">
+          {carouselTestimonials.map((testimonial) => (
+            <div class="swiper-slide h-auto">
+              <article class="testimonial-card bg-[#1A1A1A] border border-[#2A2A2A] p-6 md:p-8 flex h-full min-h-[320px] flex-col gap-6 hover:border-[#3A3A3A] transition-all duration-300">
+                <Image
+                  src={import("../assets/images/quote.svg")}
+                  alt="Quote"
+                  class="w-8 h-8"
+                />
+
+                <div class="flex flex-1 flex-col gap-4">
+                  <p class="testimonial-quote">
+                    "{testimonial.quote}"
+                  </p>
+                </div>
+
+                <div class="pt-4 border-t border-[#2A2A2A]">
+                  <p class="text-white font-bold text-base">
+                    {testimonial.author}
+                  </p>
+                </div>
+              </article>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        class="testimonial-arrow testimonial-arrow-prev"
+        type="button"
+        aria-label="Previous testimonial"
+      >
+        <span aria-hidden="true"></span>
+      </button>
+      <button
+        class="testimonial-arrow testimonial-arrow-next"
+        type="button"
+        aria-label="Next testimonial"
+      >
+        <span aria-hidden="true"></span>
+      </button>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  import { Swiper } from "swiper";
+  import { Autoplay, Navigation } from "swiper/modules";
+  import "swiper/css";
+  import "swiper/css/navigation";
+
+  new Swiper(".testimonial-swiper", {
+    modules: [Autoplay, Navigation],
+    loop: true,
+    loopAdditionalSlides: 3,
+    grabCursor: true,
+    centeredSlides: false,
+    slidesPerView: 1,
+    spaceBetween: 16,
+    speed: 700,
+    autoplay: {
+      delay: 4200,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true,
+    },
+    navigation: {
+      nextEl: ".testimonial-arrow-next",
+      prevEl: ".testimonial-arrow-prev",
+    },
+    breakpoints: {
+      768: {
+        slidesPerView: 2,
+        spaceBetween: 18,
+      },
+      1024: {
+        slidesPerView: 3,
+        spaceBetween: 20,
+      },
+    },
+  });
+</script>
+
+<style>
+  .testimonial-carousel-wrap {
+    --testimonial-control-size: 46px;
+    padding-inline: calc(var(--testimonial-control-size) + 18px);
+  }
+
+  .testimonial-swiper {
+    overflow: hidden;
+  }
+
+  .testimonial-swiper .swiper-wrapper {
+    align-items: stretch;
+  }
+
+  .testimonial-swiper .swiper-slide {
+    height: auto;
+  }
+
+  .testimonial-card {
+    user-select: none;
+  }
+
+  .testimonial-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 10;
+    width: var(--testimonial-control-size);
+    height: var(--testimonial-control-size);
+    display: grid;
+    place-items: center;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    border: 1px solid #2a2a2a;
+    background: transparent;
+    transition:
+      border-color 200ms ease,
+      background-color 200ms ease,
+      transform 200ms ease;
+  }
+
+  .testimonial-arrow:hover {
+    border-color: #ffffff;
+    background: #ffffff;
+    transform: translateY(-50%) scale(1.04);
+  }
+
+  .testimonial-arrow:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 3px;
+  }
+
+  .testimonial-arrow-prev {
+    left: 2px;
+  }
+
+  .testimonial-arrow-next {
+    right: 2px;
+  }
+
+  .testimonial-arrow span {
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #ffffff;
+    border-right: 2px solid #ffffff;
+    transition: border-color 200ms ease;
+  }
+
+  .testimonial-arrow:hover span {
+    border-color: #000000;
+  }
+
+  .testimonial-arrow-prev span {
+    transform: rotate(-135deg);
+    margin-left: 4px;
+  }
+
+  .testimonial-arrow-next span {
+    transform: rotate(45deg);
+    margin-right: 4px;
+  }
+
+  @media (max-width: 767px) {
+    .testimonial-carousel-wrap {
+      --testimonial-control-size: 38px;
+      width: calc(100% + 2rem);
+      margin-inline: -1rem;
+      padding-inline: 1rem;
+    }
+
+    .testimonial-card {
+      min-height: 300px;
+    }
+
+    .testimonial-quote {
+      font-size: 1.125rem;
+      line-height: 1.65rem;
+    }
+
+    .testimonial-arrow {
+      display: grid;
+      top: 50%;
+      border-color: rgba(255, 255, 255, 0.34);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .testimonial-arrow:hover,
+    .testimonial-arrow:active {
+      border-color: #ffffff;
+      background: #ffffff;
+    }
+
+    .testimonial-arrow-prev {
+      left: 1rem;
+      transform: translate(-100%, -50%);
+    }
+
+    .testimonial-arrow-next {
+      right: 1rem;
+      transform: translate(100%, -50%);
+    }
+
+    .testimonial-arrow-prev:hover,
+    .testimonial-arrow-prev:active {
+      transform: translate(-100%, -50%) scale(1.04);
+    }
+
+    .testimonial-arrow-next:hover,
+    .testimonial-arrow-next:active {
+      transform: translate(100%, -50%) scale(1.04);
+    }
+  }
+</style>

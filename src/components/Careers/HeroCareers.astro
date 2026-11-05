@@ -1,0 +1,162 @@
+---
+import { Image } from "astro:assets";
+import aboutImage from "../../assets/images/careers/careers-v1.webp";
+import aboutImage2 from "../../assets/images/careers/careers-v2.webp";
+import aboutImage3 from "../../assets/images/careers/careers-v3.webp";
+---
+
+<section class="relative w-full h-[80svh] overflow-hidden">
+  <!-- Swiper Container -->
+  <div class="swiper hero-swiper w-full h-full">
+    <div class="swiper-wrapper">
+      <!-- Slide 1 -->
+      <div class="swiper-slide relative">
+        <Image
+          src={aboutImage}
+          alt="About Us - Professional Plumbing Services"
+          class="w-full h-full object-cover object-top"
+        />
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"
+        >
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="swiper-slide relative">
+        <Image
+          src={aboutImage2}
+          alt="About Us - Expert Drainage Solutions"
+          class="w-full h-full object-cover object-top"
+        />
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"
+        >
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="swiper-slide relative">
+        <Image
+          src={aboutImage3}
+          alt="About Us - Reliable Service Team"
+          class="w-full h-full object-cover object-top"
+        />
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"
+        >
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Pagination -->
+    <div class="swiper-pagination custom-pagination"></div>
+  </div>
+
+  <div
+    class="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-white"
+  >
+    <h2 class="text-center drop-shadow-lg animate-fade-up">
+      Build Your Future with
+      <span class="font-bold">ProPlumb.</span>
+      <br /> Where people, pathways, and precision come together
+    </h2>
+  </div>
+
+  <script>
+    import { Swiper } from "swiper";
+    import { Pagination, Autoplay } from "swiper/modules";
+    import "swiper/css";
+    import "swiper/css/pagination";
+
+    // Initialize Swiper
+    const swiper = new Swiper(".hero-swiper", {
+      modules: [Pagination, Autoplay],
+      loop: true,
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: ".custom-pagination",
+        clickable: true,
+        renderBullet: function (index, className) {
+          return '<span class="' + className + ' custom-bullet"></span>';
+        },
+      },
+      speed: 800,
+    });
+  </script>
+
+  <style>
+    /* Ensure Swiper uses white as theme color for pagination */
+    .hero-swiper {
+      --swiper-theme-color: #ffffff;
+      --swiper-pagination-color: #ffffff;
+      --swiper-pagination-bullet-inactive-color: #ffffff6e;
+      --swiper-pagination-bullet-inactive-opacity: 1;
+      --swiper-pagination-bullet-width: 60px;
+      --swiper-pagination-bullet-border-radius: 0px;
+      --swiper-pagination-bullet-horizontal-gap: 0;
+      --swiper-pagination-bullet-height: 4px;
+    }
+
+    /* Override Swiper default border-radius */
+    .swiper-pagination-bullet {
+      border-radius: 0 !important;
+    }
+
+    /* Custom pagination styling */
+    .custom-pagination {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* base bullet: white square */
+    .custom-pagination .swiper-pagination-bullet,
+    .hero-swiper .swiper-pagination-bullet {
+      width: 10px !important;
+      height: 10px !important;
+      background: #ffffff !important;
+      opacity: 0.9 !important;
+      border-radius: 0 !important; /* sharp corners for squares */
+      margin: 0 6px !important;
+      display: inline-block !important;
+      transform: none !important; /* cancel any dynamic scaling */
+      transition:
+        width 250ms ease,
+        opacity 200ms ease,
+        background-color 200ms ease;
+      cursor: pointer;
+    }
+
+    /* active bullet: wide white rectangle */
+    .custom-pagination
+      .swiper-pagination-bullet.swiper-pagination-bullet-active,
+    .hero-swiper .swiper-pagination-bullet-active {
+      width: 44px !important; /* wide rectangle */
+      height: 10px !important;
+      border-radius: 0 !important; /* sharp corners */
+      transform: none !important;
+      background: #ffffff !important;
+      opacity: 1 !important;
+    }
+
+    /* For accessibility focus */
+    .custom-pagination .swiper-pagination-bullet:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.9);
+      outline-offset: 2px;
+    }
+
+    .custom-bullet {
+      background-color: #f00d0d !important; /* Active bullet color */
+      opacity: 1 !important;
+    }
+
+    .swiper-pagination-bullet {
+      margin: 0 !important;
+    }
+  </style>
+</section>

@@ -1,0 +1,152 @@
+---
+import Image from "astro/components/Image.astro";
+
+const teamMembers = [
+  {
+    image: import("../assets/images/about/about-1.png"),
+    name: "Team Member 1",
+  },
+  {
+    image: import("../assets/images/about/about-2.png"),
+    name: "Team Member 2",
+  },
+  {
+    image: import("../assets/images/about/about-3.png"),
+    name: "Team Member 3",
+  },
+];
+
+const stats = [
+  { number: 30, suffix: "+", label: "Years of Experience" },
+  { number: 80, suffix: "+", label: "Loyal Team" },
+  { number: 10000, suffix: "+", label: "Homes Built" },
+];
+
+const revealDelays = [
+  "[--reveal-delay:0ms]",
+  "[--reveal-delay:120ms]",
+  "[--reveal-delay:240ms]",
+];
+---
+
+<section class="relative bg-primary py-12 md:py-14 flex flex-col gap-5 z-30">
+  <div
+    class="container px-4 sm:px-6 lg:px-10 mx-auto flex flex-col items-center gap-6"
+  >
+    <h2 class="text-center animate-fade-up">
+      <span class="block">
+        Our People Drive Our
+        <span class="font-bold">Standards</span>
+      </span>
+    </h2>
+    <p
+      class="text-center w-full max-w-3xl animate-fade-up [--reveal-delay:120ms]"
+    >
+      At ProPlumb, we don’t just deliver infrastructure, we build people,
+      pathways, and long-term partnerships.
+    </p>
+    <p
+      class="text-center w-full max-w-4xl animate-fade-up [--reveal-delay:220ms]"
+    >
+      With an average team tenure exceeding seven years and a strong apprentice
+      program, our team brings experience and continuity to every project.
+      Through clear leadership, structured training, and proven systems, we
+      create reliable outcomes builders can depend on.
+    </p>
+
+    <!-- Team Images -->
+    <div class="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-3 w-full max-w-6xl">
+      {
+        teamMembers.map((member, index) => (
+          <div
+            class:list={[
+              "relative overflow-hidden bg-gray-800",
+              member.name === "Team Member 1"
+                ? "col-span-2 aspect-[16/10] md:col-span-1 md:row-span-2 md:h-full md:min-h-[420px] lg:row-span-1 lg:aspect-[4/5] lg:min-h-0"
+                : "col-span-1 aspect-[4/5]",
+              index % 2 === 0 ? "animate-fade-up" : "animate-fade-up",
+              revealDelays[index],
+            ]}
+          >
+            <Image
+              src={member.image}
+              alt={member.name}
+              sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+              class="w-full h-full object-cover"
+            />
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Statistics Counter -->
+    <div
+      class="grid grid-cols-2 gap-x-6 gap-y-10 md:gap-x-8 md:gap-y-12 lg:grid-cols-3 w-full max-w-5xl text-center"
+    >
+      {
+        stats.map((stat, index) => (
+          <div
+            class:list={[
+              "flex flex-col gap-2",
+              index === 2
+                ? "col-span-2 items-center text-center lg:col-span-1 lg:items-start lg:text-left"
+                : "col-span-1 items-center text-center lg:items-start lg:text-left",
+              "animate-fade-up",
+              revealDelays[index],
+            ]}
+          >
+            <div class="text-5xl md:text-7xl font-medium text-white">
+              <span class="counter font-bold" data-target={stat.number}>
+                0
+              </span>
+              {stat.suffix}
+            </div>
+            <p class="text-white font-medium uppercase tracking-wider text-center text-base">
+              {stat.label}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <script>
+    // Counter animation
+    function animateCounter(element, target, duration = 2000) {
+      let start = 0;
+      const increment = target / (duration / 16);
+
+      function updateCounter() {
+        start += increment;
+        if (start < target) {
+          element.textContent = Math.floor(start);
+          requestAnimationFrame(updateCounter);
+        } else {
+          element.textContent = target;
+        }
+      }
+
+      updateCounter();
+    }
+
+    // Intersection Observer for triggering counters
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const counter = entry.target;
+            const target = parseInt(counter.dataset.target);
+            animateCounter(counter, target);
+            observer.unobserve(counter);
+          }
+        });
+      },
+      { threshold: 0.5 },
+    );
+
+    // Observe all counter elements
+    document.querySelectorAll(".counter").forEach((counter) => {
+      observer.observe(counter);
+    });
+  </script>
+</section>

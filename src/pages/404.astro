@@ -1,0 +1,80 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import Cta from "../components/Cta.astro";
+import heroImage from "../assets/images/proplumb1proplumb_civildrainage_th.webp";
+import ctaImage from "../assets/images/proplumb_office_people_andy_adam.webp";
+---
+
+<Layout
+  title="Page Not Found"
+  description="The page you are looking for may have moved or no longer exists."
+  canonical="/404"
+  ogImage={heroImage}
+  noindex
+>
+  <section class="relative overflow-hidden">
+    <div class="relative h-[300px] md:h-[400px]">
+      <Image
+        src={heroImage}
+        alt="404 page background"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"
+      >
+      </div>
+
+      <div
+        class="relative z-10 flex h-[340px] flex-col items-center justify-center px-6 text-center"
+      >
+        <div class="relative inline-flex items-center justify-center">
+          <h1
+            class="text-white text-7xl md:text-9xl font-semibold leading-none tracking-tight"
+          >
+            404
+          </h1>
+        </div>
+        <h2
+          class="mt-2 text-4xl md:text-5xl font-semibold tracking-normal leading-tight"
+        >
+          Page Not Found
+        </h2>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-primary px-6 py-16 md:py-20">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="text-white/85 text-lg md:text-2xl leading-relaxed">
+        The page you’re looking for may have moved or no longer exists. You can
+        return to the homepage or explore our services to find what you’re
+        looking for.
+      </p>
+
+      <div
+        class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+      >
+        <a
+          href="/"
+          class="inline-flex min-w-[220px] justify-center bg-white px-7 py-3 text-lg font-medium text-black transition hover:bg-white/90"
+        >
+          Return to Home
+        </a>
+        <a
+          href="/services"
+          class="inline-flex min-w-[220px] justify-center bg-white px-7 py-3 text-lg font-medium text-black transition hover:bg-white/90"
+        >
+          View Our Services
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Cta
+    title={`Interested in Working with <span class="font-bold">ProPlumb?</span>`}
+    desc="If you're looking to build a long-term career with a structured, professional plumbing and civil contractor, we'd welcome the conversation."
+    buttonText="Explore Opportunities"
+    buttonHref="/careers"
+  />
+</Layout>

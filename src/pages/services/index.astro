@@ -1,0 +1,125 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import CTASection from "../../components/Cta.astro";
+import { Image } from "astro:assets";
+import serviceImage1 from "../../assets/images/problump-worksite-1.webp";
+import serviceImage2 from "../../assets/images/proplumb_mediumdensity_evergreen_internalphotos.webp";
+import cta from "../../assets/images/proplumb_civildrainage_thewlissrd_onsite_works-1.webp";
+import Header from "../../components/Header.astro";
+import showcaseImage from "../../assets/images/proplumb_civildrainage_thewlissrd_onsite_works.webp";
+import { createBreadcrumbJsonLd } from "../../lib/seo";
+---
+
+<Layout
+  title="Civil, Drainage & Plumbing Services"
+  description="Explore ProPlumb's civil, drainage, and plumbing services for residential, medium density, commercial, and development projects."
+  canonical="/services"
+  ogImage={showcaseImage}
+  jsonLd={createBreadcrumbJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Services", url: "/services" },
+  ])}
+>
+  <Header
+    title={`Civil, Drainage & Plumbing Solutions for <br/> <span class="font-bold">Professional Build Environments</span>`}
+    img={showcaseImage}
+  />
+
+  <main class="bg-[#000000]">
+    <div class="container mx-auto px-4 py-16 space-y-24">
+      <p class="text-2xl max-w-3xl mx-auto text-center animate-fade-up">
+        ProPlumb delivers structured plumbing and civil solutions for builders
+        and developers across residential, commercial, and development projects.
+        <br /><br /> Our services are built around disciplined planning, reliable
+        scheduling, safe site delivery, and clear accountability from start to finish.
+      </p>
+      <!-- Service Card 1 -->
+      <div class="relative flex flex-col lg:flex-row w-full h-full">
+        <!-- Image -->
+        <div class="w-full lg:w-[60%] h-full animate-fade-left">
+          <Image
+            src={serviceImage1}
+            alt="Drainage & Civil Installation"
+            sizes="(min-width: 1024px) 60vw, 100vw"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <!-- Text content -->
+        <div
+          class="bg-[#151515] p-6 lg:p-16 flex flex-col justify-center lg:absolute top-1/2 left-1/2 transform lg:-translate-y-1/2 w-full lg:w-[50%] h-full lg:h-[80%] animate-fade-right"
+        >
+          <h2 class="text-4xl font-light mb-6 text-white">Civil & Drainage</h2>
+          <p class="text-secondary mb-10 text-lg leading-relaxed">
+            Complete civil and drainage solutions supporting residential, medium
+            density, and commercial developments.
+            <br /><br />
+
+            ProPlumb delivers underground services, stormwater, and sewer
+            infrastructure with disciplined planning, accurate set-outs, and
+            clear site coordination.
+          </p>
+          <a
+            href="/services/civil-drainage"
+            class="bg-white text-black px-8 py-3 hover:bg-gray-100 transition-colors text-sm tracking-wider w-fit cursor-pointer"
+          >
+            Explore the Service
+          </a>
+        </div>
+      </div>
+
+      <!-- Service Card 2 -->
+      <div
+        class="relative flex flex-col lg:flex-row-reverse w-full h-full animate-fade-up"
+      >
+        <!--  image -->
+        <div class="w-full lg:w-[60%] h-full animate-fade-left">
+          <Image
+            src={serviceImage2}
+            alt="Plumbing and Drainage"
+            sizes="(min-width: 1024px) 60vw, 100vw"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <!-- Content -->
+        <div
+          class="bg-[#151515] p-6 lg:p-16 flex flex-col justify-center lg:absolute top-1/2 right-1/2 transform lg:-translate-y-1/2 w-full lg:w-[50%] h-full lg:h-[80%] animate-fade-right"
+        >
+          <h2 class="text-4xl font-light mb-6 text-white">Plumbing</h2>
+          <p class="text-secondary mb-10 text-lg leading-relaxed">
+            End-to-end plumbing solutions delivered across volume housing,
+            medium density, and high-end residential projects. <br />
+            <br />
+            We work closely with builders and site supervisors to coordinate sequencing,
+            manage variations, and keep projects moving on schedule, without surprises.
+          </p>
+          <a
+            href="/services/plumbing"
+            class="bg-white text-black px-8 py-3 hover:bg-gray-100 transition-colors text-sm tracking-wider w-fit"
+          >
+            Explore the Service
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="bg-[#1A1A1A] flex flex-col py-16 gap-6 animate-fade-up">
+      <p
+        class="max-w-3xl mx-auto text-center px-4 text-xl lg:text-2xl leading-normal font-medium"
+      >
+        Across every service area, ProPlumb applies the same structured
+        approach, clear communication, safety discipline, and accountability
+        that our long-term builder partners rely on.
+      </p>
+      <p
+        class="max-w-3xl mx-auto text-center px-4 text-xl lg:text-2xl leading-normal font-medium"
+      >
+        This consistency allows us to scale across project types while
+        maintaining predictable outcomes on site.
+      </p>
+    </div>
+
+    <CTASection
+      img={cta}
+      desc=`If you’re looking for a partner who delivers well-planned, reliable services and supports your project timelines, we’d welcome the conversation.`
+    />
+  </main>
+</Layout>

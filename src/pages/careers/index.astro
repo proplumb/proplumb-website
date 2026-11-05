@@ -1,0 +1,65 @@
+---
+export const prerender = false;
+
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+
+import workingImage from "../../assets/images/proplumb_mediumdensity_evergreen_people-3.webp";
+
+import HeroCareers from "../../components/Careers/HeroCareers.astro";
+import Cta from "../../components/Cta.astro";
+import OpenPositionsSection from "../../components/Careers/OpenPositionsSection.astro";
+import LifeAtProPlumb from "../../components/Careers/LifeAtProPlumb.astro";
+---
+
+<Layout
+  title="Careers at ProPlumb"
+  description="Explore plumbing, civil, drainage, supervision, and support career opportunities with ProPlumb's structured professional team."
+  canonical="/careers"
+  ogImage={workingImage}
+>
+  <HeroCareers />
+  <main class="bg-black text-white">
+    <section class="px-4 py-16 md:py-20">
+      <div class="mx-auto max-w-6xl">
+        <div
+          class="grid items-stretch gap-8 p-6 md:p-8 lg:grid-cols-[1fr_1.1fr]"
+        >
+          <div class="animate-fade-right text-center lg:text-start">
+            <h2 class="">
+              Working at<br /><span class="font-semibold">ProPlumb</span>
+            </h2>
+            <p class="mt-5 text-sm leading-relaxed text-white/75 md:text-base">
+              At ProPlumb, our people are the reason we succeed.<br /><br /> We are
+              independently owned and built on strong systems, clear expectations,
+              and long-term thinking. Our team works in structured, well-supported
+              environments where safety, accountability, and professionalism are standard,
+              not optional.<br /><br />We invest in developing our people,
+              creating clear pathways for growth across residential, commercial,
+              and civil projects. <br />
+              <br />If you take pride in your work and value working within a
+              disciplined, high-performing team, you’ll feel at home here.
+            </p>
+          </div>
+
+          <div class="min-h-[380px] animate-fade-left">
+            <Image
+              src={workingImage}
+              alt="ProPlumb team member"
+              sizes="(min-width: 1024px) 55vw, 100vw"
+              class="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+
+      <LifeAtProPlumb />
+
+      <OpenPositionsSection />
+    </section>
+  </main>
+  <Cta
+    title={`Interested in Working with <span class="font-bold">ProPlumb?</span>`}
+    desc=`If you’re looking to build a long-term career with a structured, professional plumbing and civil contractor, we’d welcome the conversation.`
+  />
+</Layout>

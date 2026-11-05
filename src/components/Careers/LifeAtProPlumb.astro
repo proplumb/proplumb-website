@@ -1,0 +1,295 @@
+---
+import { Image } from "astro:assets";
+
+import lifeImage1 from "../../assets/images/careers/img-1.webp";
+import lifeImage2 from "../../assets/images/careers/img-2.webp";
+import lifeImage3 from "../../assets/images/careers/img-3.webp";
+import lifeImage4 from "../../assets/images/careers/img-4.webp";
+import lifeImage5 from "../../assets/images/careers/img-5.webp";
+import lifeImage6 from "../../assets/images/careers/img-6.webp";
+import lifeImage7 from "../../assets/images/careers/img-7.webp";
+import lifeImage8 from "../../assets/images/careers/img-8.webp";
+import lifeImage9 from "../../assets/images/careers/img-9.webp";
+import lifeImage10 from "../../assets/images/careers/img-10.webp";
+import lifeImage11 from "../../assets/images/careers/img-19.webp";
+import lifeImage12 from "../../assets/images/careers/img-12.webp";
+import lifeImage13 from "../../assets/images/careers/img-13.webp";
+import lifeImage14 from "../../assets/images/careers/img-14.webp";
+import lifeImage15 from "../../assets/images/careers/img-15.webp";
+import lifeImage16 from "../../assets/images/careers/img-16.webp";
+import lifeImage17 from "../../assets/images/careers/img-17.webp";
+import lifeImage18 from "../../assets/images/careers/img-18.webp";
+
+const topRowImages = [
+  lifeImage1,
+  lifeImage3,
+  lifeImage4,
+  lifeImage14,
+  lifeImage5,
+  lifeImage6,
+  lifeImage7,
+  lifeImage15,
+  lifeImage16,
+];
+
+const bottomRowImages = [
+  lifeImage2,
+  lifeImage8,
+  lifeImage9,
+  lifeImage10,
+  lifeImage11,
+  lifeImage12,
+  lifeImage13,
+  lifeImage17,
+  lifeImage18,
+];
+
+const repeatSlides = (images: typeof topRowImages) => [
+  ...images,
+  ...images,
+  ...images,
+];
+
+const topMarqueeImages = repeatSlides(topRowImages);
+const bottomMarqueeImages = repeatSlides(bottomRowImages);
+---
+
+<section class="mt-20">
+  <div class="mx-auto max-w-4xl px-4 text-center animate-fade-up">
+    <h2>
+      Life at <span class="font-bold">ProPlumb</span>
+    </h2>
+    <p class="mt-3">
+      A team environment where professionalism, structure, and safe site
+      <br /> practices go hand in hand.
+    </p>
+  </div>
+
+  <div
+    class="life-marquee-shell mt-6 overflow-hidden bg-[#0f0f0f] py-1 md:mt-8 animate-fade-up"
+    data-life-marquee
+  >
+    <div class="swiper life-swiper life-swiper-top">
+      <div class="swiper-wrapper">
+        {
+          topMarqueeImages.map((image, index) => (
+            <div class="swiper-slide life-slide">
+              <Image
+                src={image}
+                alt={`Life at ProPlumb ${(index % topRowImages.length) + 1}`}
+                class="h-full w-auto object-cover"
+                loading={index < topRowImages.length ? "eager" : "lazy"}
+                decoding="async"
+                aria-hidden={index >= topRowImages.length}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="swiper life-swiper life-swiper-bottom">
+      <div class="swiper-wrapper">
+        {
+          bottomMarqueeImages.map((image, index) => (
+            <div class="swiper-slide life-slide">
+              <Image
+                src={image}
+                alt={`Life at ProPlumb ${(index % bottomRowImages.length) + 1}`}
+                class="h-full w-auto object-cover"
+                loading={index < bottomRowImages.length ? "eager" : "lazy"}
+                decoding="async"
+                aria-hidden={index >= bottomRowImages.length}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="life-edge life-edge-left"></div>
+    <div class="life-edge life-edge-right"></div>
+  </div>
+</section>
+
+<script>
+  import { Swiper } from "swiper";
+  import { FreeMode } from "swiper/modules";
+  import "swiper/css";
+  import "swiper/css/free-mode";
+
+  const marqueeRoots = document.querySelectorAll("[data-life-marquee]");
+
+  marqueeRoots.forEach((root) => {
+    const makeMarquee = (
+      selector: string,
+      direction: "left" | "right" = "left",
+    ) => {
+      const element = root.querySelector(selector) as HTMLElement;
+      const swiper = new Swiper(element, {
+        modules: [FreeMode],
+        loop: false,
+        slidesPerView: "auto",
+        spaceBetween: 4,
+        allowTouchMove: true,
+        grabCursor: true,
+        resistanceRatio: 0,
+        freeMode: {
+          enabled: true,
+          momentum: false,
+        },
+      });
+
+      const getLoopWidth = () => swiper.wrapperEl.scrollWidth / 3;
+      const wrapTranslate = (value: number) => {
+        const loopWidth = getLoopWidth();
+
+        if (!loopWidth) {
+          return value;
+        }
+
+        if (value <= -loopWidth * 2) {
+          return value + loopWidth;
+        }
+
+        if (value >= 0) {
+          return value - loopWidth;
+        }
+
+        return value;
+      };
+
+      const setWrappedTranslate = (value: number) => {
+        swiper.setTranslate(wrapTranslate(value));
+      };
+
+      let isDragging = false;
+      let frameId = 0;
+      let lastTime = performance.now();
+      const pixelsPerSecond = direction === "right" ? 44 : -48;
+
+      swiper.on("init resize imagesReady", () => {
+        setWrappedTranslate(-getLoopWidth());
+      });
+
+      swiper.on("touchStart", () => {
+        isDragging = true;
+      });
+
+      swiper.on("touchEnd", () => {
+        isDragging = false;
+        setWrappedTranslate(swiper.getTranslate());
+      });
+
+      const tick = (time: number) => {
+        const delta = Math.min(time - lastTime, 64) / 1000;
+        lastTime = time;
+
+        if (!isDragging) {
+          setWrappedTranslate(swiper.getTranslate() + pixelsPerSecond * delta);
+        }
+
+        frameId = requestAnimationFrame(tick);
+      };
+
+      setWrappedTranslate(-getLoopWidth());
+      frameId = requestAnimationFrame(tick);
+
+      document.addEventListener("astro:before-swap", () => {
+        cancelAnimationFrame(frameId);
+        swiper.destroy(true, true);
+      });
+
+      return swiper;
+    };
+
+    makeMarquee(".life-swiper-top");
+    makeMarquee(".life-swiper-bottom", "right");
+  });
+</script>
+
+<style>
+  .life-marquee-shell {
+    position: relative;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .life-marquee-shell:active {
+    cursor: grabbing;
+  }
+
+  .life-swiper {
+    width: 100%;
+    overflow: visible;
+  }
+
+  .life-swiper + .life-swiper {
+    margin-top: 4px;
+  }
+
+  .life-swiper .swiper-wrapper {
+    align-items: stretch;
+    transition-timing-function: linear !important;
+  }
+
+  .life-slide {
+    flex-shrink: 0;
+    width: auto;
+    height: clamp(150px, 44vw, 196px);
+    overflow: hidden;
+  }
+
+  .life-slide img {
+    display: block;
+    height: 100%;
+    width: auto;
+    max-width: none;
+    pointer-events: none;
+  }
+
+  .life-edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 34px;
+    pointer-events: none;
+    z-index: 15;
+  }
+
+  .life-edge-left {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      #161616 0%,
+      rgba(22, 22, 22, 0.9) 42%,
+      rgba(22, 22, 22, 0) 100%
+    );
+  }
+
+  .life-edge-right {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      #161616 0%,
+      rgba(22, 22, 22, 0.9) 42%,
+      rgba(22, 22, 22, 0) 100%
+    );
+  }
+
+  @media (min-width: 768px) {
+    .life-edge {
+      width: 120px;
+    }
+
+    .life-slide {
+      height: 240px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .life-swiper .swiper-wrapper {
+      transition-duration: 0ms !important;
+    }
+  }
+</style>

@@ -1,0 +1,250 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/images/proplumb-logo.png";
+
+const navLinks = [
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Services", href: "/services" },
+  // { name: "Projects", href: "/showcase" },
+  { name: "Careers", href: "/careers" },
+];
+
+const normalizePath = (path: string) =>
+  path !== "/" ? path.replace(/\/+$/, "") : "/";
+
+const currentPath = normalizePath(Astro.url.pathname);
+
+const isActiveLink = (href: string) => {
+  const normalizedHref = normalizePath(href);
+
+  if (normalizedHref === "/") {
+    return currentPath === "/";
+  }
+
+  return (
+    currentPath === normalizedHref ||
+    currentPath.startsWith(`${normalizedHref}/`)
+  );
+};
+---
+
+<nav
+  class="bg-primary flex items-center justify-between pl-5 pr-5 lg:pr-10 p relative z-50"
+>
+  <!-- Logo -->
+  <a href="/">
+    <Image src={logo} alt="ProPlumb" width={247} height={77} />
+  </a>
+
+  <!-- Hamburger/Close Icon (mobile/tablet) -->
+  <button
+    id="nav-toggle"
+    class="lg:hidden flex items-center px-3 py-2 text-secondary focus:outline-none bg-white/20 z-50 relative"
+    aria-label="Toggle navigation"
+  >
+    <!-- Hamburger Icon -->
+    <svg
+      id="hamburger-icon"
+      class="h-7 w-7 transition-all duration-300"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      ><path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M4 6h16M4 12h16M4 18h16"></path></svg
+    >
+    <!-- Close Icon -->
+    <svg
+      id="close-icon"
+      class="h-7 w-7 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 opacity-0 rotate-90"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      ><path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M6 18L18 6M6 6l12 12"></path></svg
+    >
+  </button>
+
+  <!-- Navigation Links (desktop) -->
+  <div
+    id="nav-links"
+    class="hidden lg:flex items-stretch text-lg text-secondary"
+  >
+    {
+      navLinks.map((link) => (
+        <a
+          href={link.href}
+          class={`flex items-center px-6 py-5 uppercase transition-colors ${
+            isActiveLink(link.href)
+              ? "bg-white text-black font-semibold"
+              : "text-secondary hover:bg-white/10"
+          }`}
+          aria-current={isActiveLink(link.href) ? "page" : undefined}
+        >
+          {link.name}
+        </a>
+      ))
+    }
+  </div>
+
+  <!-- Contact Button (desktop) -->
+  <a
+    href="/contact"
+    class="nav-cta group hidden lg:inline-flex items-center overflow-hidden bg-secondary text-primary text-lg px-6 py-3 font-medium ml-4 transition-colors duration-300 hover:bg-white/90"
+    data-nav-cta
+    aria-label="Let's Talk"
+  >
+    <span>Let's Talk</span>
+  </a>
+
+  <!-- Mobile Menu -->
+  <div
+    id="mobile-menu"
+    class="lg:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40 flex flex-col items-center justify-center text-secondary text-2xl gap-8 transition-all duration-300 opacity-0 pointer-events-none"
+  >
+    {
+      navLinks.map((link, index) => (
+        <a
+          href={link.href}
+          class={`block py-2 px-4 mobile-menu-item transition-colors ${
+            isActiveLink(link.href)
+              ? "bg-[#e5e5e5] text-black font-semibold"
+              : ""
+          }`}
+          aria-current={isActiveLink(link.href) ? "page" : undefined}
+          data-index={index}
+          onclick="document.getElementById('mobile-menu').classList.add('opacity-0','pointer-events-none'); document.getElementById('hamburger-icon').classList.remove('opacity-0', 'rotate-90'); document.getElementById('hamburger-icon').classList.add('opacity-100', 'rotate-0'); document.getElementById('close-icon').classList.remove('opacity-100', 'rotate-0'); document.getElementById('close-icon').classList.add('opacity-0', 'rotate-90');"
+        >
+          {link.name}
+        </a>
+      ))
+    }
+    <a
+      href="/contact"
+      class="mobile-menu-button flex w-[calc(100%-2rem)] max-w-sm items-center justify-between bg-secondary text-primary text-lg px-6 py-4 font-medium"
+      onclick="document.getElementById('mobile-menu').classList.add('opacity-0','pointer-events-none'); document.getElementById('hamburger-icon').classList.remove('opacity-0', 'rotate-90'); document.getElementById('hamburger-icon').classList.add('opacity-100', 'rotate-0'); document.getElementById('close-icon').classList.remove('opacity-100', 'rotate-0'); document.getElementById('close-icon').classList.add('opacity-0', 'rotate-90');"
+    >
+      <span>Let's Talk</span>
+      <span
+        class="flex items-center justify-center text-primary"
+        aria-hidden="true"
+      >
+        <svg
+          class="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M7 17L17 7M9 7h8v8"></path>
+        </svg>
+      </span>
+    </a>
+  </div>
+</nav>
+
+<script>
+  import gsap from "gsap";
+
+  const toggle = document.getElementById("nav-toggle");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const hamburgerIcon = document.getElementById("hamburger-icon");
+  const closeIcon = document.getElementById("close-icon");
+  const navCta = document.querySelector<HTMLElement>("[data-nav-cta]");
+
+  let isCtaScrolled = false;
+
+  const setCtaScrolled = (scrolled: boolean) => {
+    if (!navCta || isCtaScrolled === scrolled) return;
+
+    isCtaScrolled = scrolled;
+
+    gsap.to(navCta, {
+      y: scrolled ? 2 : 0,
+      scale: scrolled ? 0.96 : 1,
+      duration: 0.35,
+      ease: "power3.out",
+      overwrite: "auto",
+    });
+  };
+
+  const handleCtaScroll = () => {
+    setCtaScrolled(window.scrollY > 24);
+  };
+
+  handleCtaScroll();
+  window.addEventListener("scroll", handleCtaScroll, { passive: true });
+
+  toggle?.addEventListener("click", () => {
+    if (mobileMenu?.classList.contains("opacity-0")) {
+      // Open menu
+      mobileMenu.classList.remove("opacity-0", "pointer-events-none");
+      mobileMenu.classList.add("opacity-100");
+
+      // Switch to close icon
+      hamburgerIcon?.classList.add("opacity-0", "rotate-90");
+      hamburgerIcon?.classList.remove("opacity-100", "rotate-0");
+      closeIcon?.classList.remove("opacity-0", "rotate-90");
+      closeIcon?.classList.add("opacity-100", "rotate-0");
+
+      // Enhanced GSAP animations for menu items
+      gsap.set(".mobile-menu-item", {
+        y: 80,
+        opacity: 0,
+        scale: 0.8,
+        rotationX: 45,
+      });
+      gsap.set(".mobile-menu-button", {
+        y: 100,
+        opacity: 0,
+        scale: 0.7,
+        rotationY: 20,
+      });
+
+      // Animate menu items with enhanced effects
+      gsap.to(".mobile-menu-item", {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        rotationX: 0,
+        duration: 0.8,
+        ease: "back.out(1.7)",
+        stagger: 0.15,
+        delay: 0.3,
+      });
+
+      // Animate button with bounce effect
+      gsap.to(".mobile-menu-button", {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        rotationY: 0,
+        duration: 0.9,
+        ease: "elastic.out(1, 0.5)",
+        delay: 1.2,
+      });
+    } else {
+      // Close menu
+      mobileMenu?.classList.add("opacity-0", "pointer-events-none");
+      mobileMenu?.classList.remove("opacity-100");
+
+      // Switch to hamburger icon
+      hamburgerIcon?.classList.remove("opacity-0", "rotate-90");
+      hamburgerIcon?.classList.add("opacity-100", "rotate-0");
+      closeIcon?.classList.remove("opacity-100", "rotate-0");
+      closeIcon?.classList.add("opacity-0", "rotate-90");
+    }
+  });
+</script>

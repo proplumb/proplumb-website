@@ -1,0 +1,120 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Cta from "../components/Cta.astro";
+import headerImage from "../assets/images/proplumb_head_quarter.webp";
+import ctaImage from "../assets/images/about/proplumb_ateam_warehouse.webp";
+
+const termsItems = [
+  {
+    title: "Use of Website Content",
+    body: "All content on this website is provided for general information purposes only. You may view and use the material for personal or internal business reference, but you must not reproduce, modify, distribute, or republish content without prior written permission from ProPlumb.",
+  },
+  {
+    title: "Accuracy of Information",
+    body: "ProPlumb aims to keep website information accurate and current; however, we do not guarantee that all content is complete, error-free, or up to date at all times. Information may change without notice and should not be relied on as professional advice without direct confirmation from our team.",
+  },
+  {
+    title: "Limitation of Liability",
+    body: "To the maximum extent permitted by law, ProPlumb is not liable for any direct, indirect, incidental, or consequential loss arising from the use of this website or reliance on its content. Use of this website is at your own risk.",
+  },
+  {
+    title: "Intellectual Property",
+    body: "All text, graphics, branding, logos, layout, and other materials on this website are the property of ProPlumb unless otherwise stated. Unauthorised use, copying, or adaptation of any content is prohibited.",
+  },
+  {
+    title: "External Links",
+    body: "This website may include links to third-party websites for convenience. ProPlumb does not control or endorse third-party content and is not responsible for the accuracy, availability, or security of external websites.",
+  },
+  {
+    title: "Changes to These Terms",
+    body: "ProPlumb may update these Terms of Use at any time without prior notice. Changes become effective once published on this page. Continued use of the website indicates acceptance of the updated terms.",
+  },
+];
+---
+
+<Layout
+  title="Website Terms of Use"
+  description="Read the terms that apply when using the ProPlumb website, including content use, accuracy, liability, intellectual property, and external links."
+  canonical="/terms-of-use"
+  ogImage={headerImage}
+>
+  <Header
+    title={`Website <span class="font-bold">Terms of Use</span>`}
+    img={headerImage}
+  />
+
+  <section class="w-full border-t border-white/10 py-8 md:py-12">
+    <div class="max-w-7xl mx-auto px-5 md:px-10">
+      {
+        termsItems.map((item, index) => (
+          <details
+            class="group border-b border-white/10 py-9 animate-fade-left"
+            style={`--reveal-delay:${Math.min(index, 6) * 90}ms`}
+          >
+            <summary class="list-none cursor-pointer flex items-start lg:items-center gap-5">
+              <span class="shrink-0 mt-1 size-10 rounded-full bg-white/15 flex items-center justify-center">
+                <svg
+                  class="size-6 text-white transition-transform duration-300 group-open:rotate-90"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M6 10H14M10 6L14 10L10 14"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <h3 class="text-2xl lg:text-3xl leading-[1.1] font-light max-w-5xl">
+                {item.title}
+              </h3>
+            </summary>
+            <div class="terms-answer-grid ml-12 max-w-[980px]">
+              <div class="terms-answer-inner">
+                <p class="pt-4 text-white/80 text-base md:text-lg leading-relaxed">
+                  {item.body}
+                </p>
+              </div>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <Cta
+    title={`Interested in Working with <span class="font-bold">ProPlumb?</span>`}
+    desc="If you're looking to build a long-term career with a structured, professional plumbing and civil contractor, we'd welcome the conversation."
+    buttonText="Explore Opportunities"
+    buttonHref="/careers"
+  />
+</Layout>
+
+<style>
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .terms-answer-grid {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 320ms ease,
+      opacity 280ms ease;
+  }
+
+  .terms-answer-inner {
+    overflow: hidden;
+  }
+
+  details[open] .terms-answer-grid {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+</style>

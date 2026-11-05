@@ -1,0 +1,121 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Cta from "../components/Cta.astro";
+import headerImage from "../assets/images/proplumb_mediumdensity_evergreen_vehicles-4.webp";
+import ctaImage from "../assets/images/services-cta.webp";
+
+const privacyItems = [
+  {
+    title: "Information We Collect",
+    body: "We may collect personal information that you provide directly, including your name, phone number, email address, company details, and project information. We may also collect technical data such as browser type, device details, and on-site usage activity to improve website performance and user experience.",
+  },
+  {
+    title: "How We Use Your Information",
+    body: "Your information is used to respond to enquiries, prepare quotes, deliver services, communicate project-related updates, and improve our website experience. We only use information where it is reasonably required to support service delivery, operations, and client communication.",
+  },
+  {
+    title: "Storage and Security",
+    body: "ProPlumb takes reasonable steps to protect personal information from unauthorised access, loss, misuse, or disclosure. Information is stored using practical technical and administrative safeguards. While we apply security controls, no online transmission or storage method can be guaranteed as fully secure.",
+  },
+  {
+    title: "Cookies and Website Analytics",
+    body: "Our website may use cookies and analytics tools to understand visitor behaviour, improve navigation, and optimise site performance. These technologies help us monitor usage trends and enhance content relevance. You can control cookie preferences through your browser settings.",
+  },
+  {
+    title: "Third-Party Services",
+    body: "In some cases, we may share relevant information with trusted third-party providers who support website hosting, analytics, communications, or operational processes. We do not sell personal information. Any disclosure is limited to necessary business functions or legal obligations.",
+  },
+  {
+    title: "Accessing or Updating Your Information",
+    body: "You may request access to personal information we hold about you and request corrections if details are inaccurate or out of date. To make a privacy request, contact our team at admin@proplumb.com.au or call (03) 5940 2477.",
+  },
+];
+---
+
+<Layout
+  title="Privacy Policy"
+  description="Read ProPlumb's privacy policy, including how website enquiries, contact details, project information, and website usage data may be handled."
+  canonical="/privacy-policy"
+  ogImage={headerImage}
+>
+  <Header
+    title={`Privacy <span class="font-bold">Policy</span>`}
+    img={headerImage}
+  />
+
+  <section class="w-full border-t border-white/10 py-8 md:py-12">
+    <div class="max-w-7xl mx-auto px-5 md:px-10">
+      {
+        privacyItems.map((item, index) => (
+          <details
+            class="group border-b border-white/10 py-9 animate-fade-left"
+            style={`--reveal-delay:${Math.min(index, 6) * 90}ms`}
+          >
+            <summary class="list-none cursor-pointer flex items-start lg:items-center gap-5">
+              <span class="shrink-0 mt-1 size-10 rounded-full bg-white/15 flex items-center justify-center">
+                <svg
+                  class="size-6 text-white transition-transform duration-300 group-open:rotate-90"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M6 10H14M10 6L14 10L10 14"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <h3 class="text-2xl lg:text-3xl leading-[1.1] font-light max-w-5xl">
+                {item.title}
+              </h3>
+            </summary>
+            <div class="privacy-answer-grid ml-12 max-w-[980px]">
+              <div class="privacy-answer-inner">
+                <p class="pt-4 text-white/80 text-base md:text-lg leading-relaxed">
+                  {item.body}
+                </p>
+              </div>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <Cta
+    img={ctaImage}
+    title={`Interested in Working with <span class="font-bold">ProPlumb?</span>`}
+    desc="If you need clarification about how information is handled, we're happy to help."
+    buttonText="Explore Opportunities"
+    buttonHref="/contact"
+  />
+</Layout>
+
+<style>
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .privacy-answer-grid {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 320ms ease,
+      opacity 280ms ease;
+  }
+
+  .privacy-answer-inner {
+    overflow: hidden;
+  }
+
+  details[open] .privacy-answer-grid {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+</style>

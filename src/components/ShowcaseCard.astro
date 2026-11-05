@@ -1,0 +1,72 @@
+---
+import type { ImageMetadata } from "astro";
+import { resolveAssetImage } from "../utils/resolveAssetImage";
+
+export interface Props {
+  title: string;
+  shortDescription: string;
+  category: string;
+  image: string | ImageMetadata;
+  slug: string;
+  featured?: boolean;
+}
+
+const {
+  title,
+  shortDescription,
+  category,
+  image,
+  slug,
+  featured = false,
+} = Astro.props;
+const imageSrc = resolveAssetImage(image);
+---
+
+<div class="group overflow-hidden cursor-pointer transition-all duration-300">
+  <a href={`/showcase/${slug}`} class="block h-full">
+    <!-- Background Image -->
+    <div class="w-full h-[500px] overflow-hidden">
+      <img
+        src={imageSrc}
+        alt={title}
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+      <!-- Overlay -->
+      <!-- <div
+        class="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-300"
+      >
+      </div> -->
+    </div>
+
+    <!-- Content -->
+    <div class="w-full flex justify-between items-center">
+      <!-- Title & cate-->
+      <div class="relative h-full flex flex-col text-white mt-4">
+        <h3 class="text-xl leading-tight">
+          {title}
+        </h3>
+        <p class="text-base mt-1 text-white/70 leading-tight font-medium">
+          {shortDescription}
+        </p>
+        <!-- <p class="text-[10px] mt-1 text-white/60 leading-tight">
+          {category}
+        </p> -->
+      </div>
+      <!-- Arrow -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1"
+        stroke="currentColor"
+        class="size-16 text-white rotate-[45deg] group-hover:rotate-[90deg] transition-all duration-300"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        ></path>
+      </svg>
+    </div>
+  </a>
+</div>

@@ -1,0 +1,91 @@
+---
+import Image from "astro/components/Image.astro";
+
+const pillars = [
+  {
+    icon: import("../assets/images/Pillars/shield.png"),
+    title: "Built on Trust",
+    description: "Earned through consistency, transparency, and doing what we say we will."
+  },
+  {
+    icon: import("../assets/images/Pillars/people.png"),
+    title: "People & Pathways",
+    description: "Clear career growth and leadership developed from within."
+  },
+  {
+    icon: import("../assets/images/Pillars/process.png"),
+    title: "Process-Driven Results",
+    description: "Systems that reduce risk and deliver repeatable quality across every site."
+  },
+  {
+    icon: import("../assets/images/Pillars/above.png"),
+    title: "Above & Beyond",
+    description: "Our standard is not for show, but because our clients rely on the outcome."
+  },
+  {
+    icon: import("../assets/images/Pillars/continual.png"),
+    title: "Continual Improvement",
+    description: "Always refining processes to stay ahead of industry demands."
+  }
+];
+
+const revealDelays = [
+  "[--reveal-delay:0ms]",
+  "[--reveal-delay:90ms]",
+  "[--reveal-delay:180ms]",
+  "[--reveal-delay:270ms]",
+  "[--reveal-delay:360ms]",
+];
+
+---
+
+<section
+  class="relative bg-[#0D0D0D] py-14 flex flex-col gap-5 z-30 border border-[#212121]"
+>
+  <div class="container px-10 mx-auto flex flex-col items-center gap-14">
+    <div class="text-center">
+      <h2
+        class="text-center mb-4 animate-fade-up"
+      >
+        What We're
+        <span class="font-bold">Built</span> On
+      </h2>
+      <p
+        class="text-center w-full max-w-4xl text-gray-300 leading-relaxed animate-fade-up [--reveal-delay:120ms]"
+      >
+        Our five pillars keep us grounded and growing
+      </p>
+    </div>
+
+    <!-- Pillars Grid -->
+    <div class="grid grid-cols-1  md:grid-cols-3 lg:grid-cols-5 gap-3 w-full max-w-8xl">
+      {pillars.map((pillar, index) => (
+        <div
+          class:list={[
+            "bg-primary p-8 flex flex-col items-start gap-6 hover:border-[#3A3A3A] transition-all duration-300 group animate-fade-up",
+            revealDelays[index],
+          ]}
+        >
+          <!-- Icon -->
+          <div class="w-12 h-12 flex items-center justify-center">
+            <Image 
+              src={pillar.icon}
+              alt={pillar.title}
+              class="w-full h-full object-contain transition-opacity duration-300"
+            />
+          </div>
+          
+          <!-- Content -->
+          <div class="flex flex-col gap-3">
+            <h3 class="text-lg font-medium text-white leading-tight">
+              {pillar.title}
+            </h3>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              {pillar.description}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

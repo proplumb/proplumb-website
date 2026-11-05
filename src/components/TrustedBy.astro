@@ -1,0 +1,240 @@
+---
+import { Image } from "astro:assets";
+
+import sjdHomesLogo from "../assets/images/logos/sjd-homes-logo.png";
+import metriconLogo from "../assets/images/logos/metricon-logo.png";
+import beltinaLogo from "../assets/images/logos/beltina-logo.png";
+import blzLogo from "../assets/images/logos/blz-logo.png";
+import summetLogo from "../assets/images/logos/summet-logo.png";
+import buildlab from "../assets/images/logos/new/buildlab.png";
+import homegroup from "../assets/images/logos/new/home-group.png";
+import primebuilding from "../assets/images/logos/new/prime-building.png";
+import play from "../assets/images/logos/new/5-play.png";
+
+const logos = [
+  { src: sjdHomesLogo, name: "SJD Homes" },
+  { src: metriconLogo, name: "Metricon" },
+  { src: buildlab, name: "BuildLap" },
+  { src: homegroup, name: "Home Group" },
+  { src: primebuilding, name: "Prime Building" },
+  { src: play, name: "5 play" },
+  // { src: beltinaLogo, name: "Beltana" },
+  // { src: blzLogo, name: "BLZ" },
+  // { src: summetLogo, name: "Summet" },
+];
+
+const marqueeRepeatCount = 12;
+const marqueeLogos = Array.from(
+  { length: marqueeRepeatCount },
+  () => logos,
+).flat();
+
+const marqueeSettings = {
+  gap: 12,
+  speed: 48,
+  cardWidth: {
+    base: 140,
+    sm: 188,
+    lg: 188,
+  },
+  cardHeight: {
+    base: 88,
+    sm: 80,
+    lg: 104,
+  },
+};
+---
+
+<section
+  class="relative z-30 mt-[95svh] flex flex-col gap-8 bg-primary pb-16 pt-0 lg:mt-[100vh] lg:gap-10 lg:pt-10"
+>
+  <div
+    class="container mx-auto flex flex-col items-center justify-between gap-8 px-6 lg:flex-row lg:items-start lg:gap-10 lg:px-10"
+  >
+    <h2 class="w-full text-center animate-fade-up lg:text-end">
+      <span class="block">
+        <span class="font-bold">Trusted</span> by Australia’s <br /> leading builders
+      </span>
+    </h2>
+    <div class="flex w-full flex-col gap-6">
+      <p class="w-full max-w-2xl text-center animate-fade-up lg:text-start">
+        ProPlumb delivers civil, drainage, and plumbing solutions focused on
+        accuracy and long-term reliability.
+      </p>
+      <p
+        class="w-full max-w-2xl text-center animate-fade-up [--reveal-delay:120ms] lg:text-start"
+      >
+        With over 30 years’ experience working alongside Australia’s leading
+        builders and developers, we have built a reputation for structured
+        delivery, reliable timeframes, and strict adherence to site safety and
+        compliance standards, without hidden surprises.
+      </p>
+    </div>
+  </div>
+
+  <div
+    class="trusted-marquee mt-6 w-full overflow-x-hidden md:mt-10 lg:mt-12"
+    data-trusted-marquee
+    data-logo-count={logos.length}
+    style={`
+      --trusted-marquee-gap: ${marqueeSettings.gap}px;
+      --trusted-marquee-speed: ${marqueeSettings.speed};
+      --trusted-card-width-base: ${marqueeSettings.cardWidth.base}px;
+      --trusted-card-width-sm: ${marqueeSettings.cardWidth.sm}px;
+      --trusted-card-width-lg: ${marqueeSettings.cardWidth.lg}px;
+      --trusted-card-height-base: ${marqueeSettings.cardHeight.base}px;
+      --trusted-card-height-sm: ${marqueeSettings.cardHeight.sm}px;
+      --trusted-card-height-lg: ${marqueeSettings.cardHeight.lg}px;
+    `}
+  >
+    <div class="swiper trusted-swiper">
+      <div class="swiper-wrapper">
+        {
+          marqueeLogos.map((logo, index) => (
+            <div
+              class="swiper-slide trusted-logo-card group/logo relative flex shrink-0  items-center justify-center border border-[#222222] bg-[#101010] p-4 sm:p-5 lg:p-7"
+              aria-hidden={index >= logos.length}
+            >
+              <Image
+                src={logo.src}
+                alt={`${logo.name} Logo`}
+                class="h-full w-full object-contain transition-opacity duration-300 "
+                loading={index < logos.length ? "eager" : "lazy"}
+                decoding="async"
+              />
+              <span
+                aria-hidden="true"
+                class="pointer-events-none absolute -top-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover/logo:opacity-100"
+              >
+                {logo.name}
+              </span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .trusted-swiper {
+      width: 100%;
+      overflow: visible;
+    }
+
+    .trusted-swiper .swiper-wrapper {
+      align-items: stretch;
+      gap: var(--trusted-marquee-gap);
+      transition-timing-function: linear !important;
+      transition-duration: 0ms !important;
+      will-change: transform;
+    }
+
+    .trusted-swiper .swiper-slide {
+      width: auto;
+    }
+
+    .trusted-logo-card {
+      width: var(--trusted-card-width-base);
+      height: var(--trusted-card-height-base);
+    }
+
+    .trusted-swiper img {
+      pointer-events: none;
+      filter: brightness(0) invert(1);
+    }
+
+    @media (min-width: 640px) {
+      .trusted-logo-card {
+        width: var(--trusted-card-width-sm);
+        height: var(--trusted-card-height-sm);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .trusted-logo-card {
+        width: var(--trusted-card-width-lg);
+        height: var(--trusted-card-height-lg);
+      }
+    }
+  </style>
+</section>
+
+<script>
+  import { Swiper } from "swiper";
+  import "swiper/css";
+
+  const marqueeRoots = document.querySelectorAll("[data-trusted-marquee]");
+
+  marqueeRoots.forEach((root) => {
+    const element = root.querySelector(".trusted-swiper");
+
+    if (!(element instanceof HTMLElement)) {
+      return;
+    }
+
+    const swiper = new Swiper(element, {
+      loop: false,
+      slidesPerView: "auto",
+      spaceBetween: 0,
+      allowTouchMove: false,
+      observer: true,
+      observeParents: true,
+    });
+
+    const logoCount = Number.parseInt(
+      root.getAttribute("data-logo-count") || "0",
+      10,
+    );
+    const slides = Array.from(swiper.slides);
+    const firstSlide = slides[0];
+    const firstRepeatedSlide = slides[logoCount];
+    let loopWidth = 0;
+    let offset = 0;
+    let lastTime = performance.now();
+    let frameId = 0;
+    const pixelsPerSecond =
+      Number.parseFloat(
+        getComputedStyle(root).getPropertyValue("--trusted-marquee-speed"),
+      ) || 48;
+
+    const measureLoopWidth = () => {
+      swiper.update();
+
+      if (!firstSlide || !firstRepeatedSlide) {
+        loopWidth = 0;
+        return;
+      }
+
+      loopWidth = firstRepeatedSlide.offsetLeft - firstSlide.offsetLeft;
+      offset = loopWidth ? offset % loopWidth : 0;
+      swiper.wrapperEl.style.transform = `translate3d(${-offset}px, 0, 0)`;
+    };
+
+    swiper.on("imagesReady", () => {
+      measureLoopWidth();
+    });
+
+    window.addEventListener("resize", measureLoopWidth);
+
+    const tick = (time) => {
+      const delta = Math.min(time - lastTime, 64) / 1000;
+      lastTime = time;
+
+      if (loopWidth) {
+        offset = (offset + pixelsPerSecond * delta) % loopWidth;
+        swiper.wrapperEl.style.transform = `translate3d(${-offset}px, 0, 0)`;
+      }
+
+      frameId = requestAnimationFrame(tick);
+    };
+
+    measureLoopWidth();
+    frameId = requestAnimationFrame(tick);
+
+    document.addEventListener("astro:before-swap", () => {
+      window.removeEventListener("resize", measureLoopWidth);
+      cancelAnimationFrame(frameId);
+      swiper.destroy(true, true);
+    });
+  });
+</script>

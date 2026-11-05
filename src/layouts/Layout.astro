@@ -1,0 +1,146 @@
+---
+import "../styles/global.css";
+import Navbar from "../components/Navbar.astro";
+import FooterV2 from "../components/FooterV2.astro";
+import BackToTop from "../components/BackToTop.astro";
+import {
+	DEFAULT_SEO_DESCRIPTION,
+	DEFAULT_SEO_TITLE,
+	SITE_NAME,
+	createOrganizationJsonLd,
+	createWebsiteJsonLd,
+	getImageUrl,
+	toAbsoluteUrl,
+	type JsonLdObject,
+	type SeoImage,
+} from "../lib/seo";
+
+interface Props {
+	title?: string;
+	description?: string;
+	canonical?: string;
+	ogImage?: SeoImage;
+	noindex?: boolean;
+	jsonLd?: JsonLdObject | JsonLdObject[];
+}
+
+const {
+	title = DEFAULT_SEO_TITLE,
+	description = DEFAULT_SEO_DESCRIPTION,
+	canonical,
+	ogImage,
+	noindex = false,
+	jsonLd = [],
+} = Astro.props;
+
+const pageTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
+const canonicalUrl = toAbsoluteUrl(canonical || Astro.url.pathname);
+const ogImageUrl = getImageUrl(ogImage);
+const jsonLdItems = [
+	createOrganizationJsonLd(),
+	createWebsiteJsonLd(),
+	...(Array.isArray(jsonLd) ? jsonLd : [jsonLd]),
+];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/png" sizes="268x267" href="/favicon-v3.png" />
+		<link rel="manifest" href="/manifest.json" />
+		<meta name="theme-color" content="#ffffff" />
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalUrl} />
+		<meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
+		<meta property="og:site_name" content={SITE_NAME} />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalUrl} />
+		{ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+		<meta name="twitter:card" content={ogImageUrl ? "summary_large_image" : "summary"} />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={description} />
+		{ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+		{jsonLdItems.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
+	</head>
+	<body class="relative bg-primary">
+		<Navbar />
+		<slot />
+		<BackToTop />
+		<script>
+			import Lenis from "lenis";
+
+			const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+			let lenis: Lenis | null = null;
+			let frameId = 0;
+
+			const stopLenis = () => {
+				if (frameId) {
+					cancelAnimationFrame(frameId);
+					frameId = 0;
+				}
+
+				lenis?.destroy();
+				lenis = null;
+				window.__PROPLUMB_LENIS__ = undefined;
+			};
+
+			const startLenis = () => {
+				if (lenis || motionQuery.matches) return;
+
+				lenis = new Lenis({
+					duration: 2,
+					gestureDirection: "vertical",
+					smooth: true,
+					mouseMultiplier: 1,
+					smoothTouch: false,
+					touchMultiplier: 2,
+					infinite: false,
+				});
+
+				window.__PROPLUMB_LENIS__ = lenis;
+
+				const raf = (time: number) => {
+					lenis?.raf(time);
+					frameId = requestAnimationFrame(raf);
+				};
+
+				frameId = requestAnimationFrame(raf);
+			};
+
+			startLenis();
+
+			motionQuery.addEventListener("change", () => {
+				stopLenis();
+				startLenis();
+			});
+		</script>
+
+		<script>
+			import {
+				destroySiteAnimations,
+				initSiteAnimations,
+			} from "../scripts/animations/siteAnimations";
+
+			const bootSiteAnimations = () => {
+				initSiteAnimations();
+			};
+
+			if (document.readyState === "loading") {
+				document.addEventListener("DOMContentLoaded", bootSiteAnimations, {
+					once: true,
+				});
+			} else {
+				bootSiteAnimations();
+			}
+
+			document.addEventListener("astro:before-swap", destroySiteAnimations);
+			document.addEventListener("astro:page-load", bootSiteAnimations);
+		</script>
+		<FooterV2 />
+	</body>
+</html>

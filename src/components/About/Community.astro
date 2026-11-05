@@ -1,0 +1,301 @@
+---
+import { Image } from "astro:assets";
+import community1 from "../../assets/images/community/community-1.png";
+import community2 from "../../assets/images/community/community-2.png";
+import community3 from "../../assets/images/community/Community-3.png";
+import community4 from "../../assets/images/community/community-4.png";
+
+const communityImages = [community1, community2, community3, community4];
+const marqueeRepeatCount = 12;
+const marqueeImages = Array.from(
+  { length: marqueeRepeatCount },
+  () => communityImages,
+).flat();
+
+const marqueeSettings = {
+  gap: 8,
+  speed: 48,
+};
+---
+
+<section class="pt-14 lg:pt-24 pb-2 bg-black text-white overflow-hidden">
+  <div class="mx-auto px-4">
+    <!-- Section Content -->
+    <div class="max-w-4xl mx-auto text-center mb-8 lg:mb-16">
+      <!-- Section Title -->
+      <h2 class="mb-6 lg:mb-16 animate-fade-up">
+        Shared Values<br />
+        Driven by <span class="font-bold">Community</span>
+      </h2>
+
+      <!-- Description -->
+      <p class="text-base leading-relaxed text-gray-300 lg:text-xl animate-fade-up [--reveal-delay:120ms]">
+        We believe success is not only measured on site, but by the impact we
+        make beyond it. <br />
+        From supporting local initiatives to contributing time, knowledge, and resources,
+        ProPlumb is committed to strengthening the communities we operate in. Our
+        approach to giving back is considered, genuine, and aligned with how we show
+        up every day.
+      </p>
+    </div>
+
+    <div
+      class="community-marquee-shell relative overflow-hidden animate-fade-up"
+      data-community-marquee
+      data-image-count={communityImages.length}
+      style={`
+        --community-marquee-gap: ${marqueeSettings.gap}px;
+        --community-marquee-speed: ${marqueeSettings.speed};
+      `}
+    >
+      <div class="swiper community-swiper">
+        <div class="swiper-wrapper">
+          {
+            marqueeImages.map((image, index) => (
+              <div class="swiper-slide community-slide">
+                <Image
+                  src={image}
+                  alt={`Community image ${(index % communityImages.length) + 1}`}
+                  class="h-full w-auto object-cover"
+                  loading={index < communityImages.length ? "eager" : "lazy"}
+                  decoding="async"
+                  aria-hidden={index >= communityImages.length}
+                />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="community-edge community-edge-left"></div>
+      <div class="community-edge community-edge-right"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { Swiper } from "swiper";
+  import "swiper/css";
+
+  const marqueeRoots = document.querySelectorAll("[data-community-marquee]");
+
+  marqueeRoots.forEach((root) => {
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+
+    const element = root.querySelector(".community-swiper");
+
+    if (!(element instanceof HTMLElement)) {
+      return;
+    }
+
+    const swiper = new Swiper(element, {
+      loop: false,
+      slidesPerView: "auto",
+      spaceBetween: 0,
+      allowTouchMove: false,
+      observer: true,
+      observeParents: true,
+    });
+
+    const imageCount = Number.parseInt(root.getAttribute("data-image-count") || "0", 10);
+    const slides = Array.from(swiper.slides);
+    const firstSlide = slides[0];
+    const firstRepeatedSlide = slides[imageCount];
+    let loopWidth = 0;
+    let offset = 0;
+    let lastTime = performance.now();
+    let frameId = 0;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartOffset = 0;
+    const pixelsPerSecond =
+      Number.parseFloat(getComputedStyle(root).getPropertyValue("--community-marquee-speed")) ||
+      48;
+
+    const normalizeOffset = (value: number) => {
+      if (!loopWidth) {
+        return 0;
+      }
+
+      return ((value % loopWidth) + loopWidth) % loopWidth;
+    };
+
+    const applyTransform = () => {
+      swiper.wrapperEl.style.transform = `translate3d(${-offset}px, 0, 0)`;
+    };
+
+    const measureLoopWidth = () => {
+      swiper.update();
+
+      if (!firstSlide || !firstRepeatedSlide) {
+        loopWidth = 0;
+        return;
+      }
+
+      loopWidth = firstRepeatedSlide.offsetLeft - firstSlide.offsetLeft;
+      offset = normalizeOffset(offset);
+      applyTransform();
+    };
+
+    swiper.on("imagesReady", () => {
+      measureLoopWidth();
+    });
+
+    window.addEventListener("resize", measureLoopWidth);
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!loopWidth) {
+        return;
+      }
+
+      isDragging = true;
+      dragStartX = event.clientX;
+      dragStartOffset = offset;
+      lastTime = performance.now();
+      root.classList.add("is-dragging");
+      root.setPointerCapture(event.pointerId);
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isDragging) {
+        return;
+      }
+
+      const dragDelta = event.clientX - dragStartX;
+      offset = normalizeOffset(dragStartOffset - dragDelta);
+      applyTransform();
+    };
+
+    const handlePointerEnd = (event: PointerEvent) => {
+      if (!isDragging) {
+        return;
+      }
+
+      isDragging = false;
+      root.classList.remove("is-dragging");
+
+      if (root.hasPointerCapture(event.pointerId)) {
+        root.releasePointerCapture(event.pointerId);
+      }
+    };
+
+    root.addEventListener("pointerdown", handlePointerDown);
+    root.addEventListener("pointermove", handlePointerMove);
+    root.addEventListener("pointerup", handlePointerEnd);
+    root.addEventListener("pointercancel", handlePointerEnd);
+    root.addEventListener("lostpointercapture", handlePointerEnd);
+
+    const tick = (time: number) => {
+      const delta = Math.min(time - lastTime, 64) / 1000;
+      lastTime = time;
+
+      if (loopWidth && !isDragging) {
+        offset = normalizeOffset(offset + pixelsPerSecond * delta);
+        applyTransform();
+      }
+
+      frameId = requestAnimationFrame(tick);
+    };
+
+    measureLoopWidth();
+    frameId = requestAnimationFrame(tick);
+
+    document.addEventListener("astro:before-swap", () => {
+      window.removeEventListener("resize", measureLoopWidth);
+      root.removeEventListener("pointerdown", handlePointerDown);
+      root.removeEventListener("pointermove", handlePointerMove);
+      root.removeEventListener("pointerup", handlePointerEnd);
+      root.removeEventListener("pointercancel", handlePointerEnd);
+      root.removeEventListener("lostpointercapture", handlePointerEnd);
+      cancelAnimationFrame(frameId);
+      swiper.destroy(true, true);
+    });
+  });
+</script>
+
+<style>
+  .community-marquee-shell {
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  .community-marquee-shell.is-dragging {
+    cursor: grabbing;
+  }
+
+  .community-swiper {
+    width: 100%;
+    overflow: visible;
+  }
+
+  .community-swiper .swiper-wrapper {
+    align-items: stretch;
+    gap: var(--community-marquee-gap);
+    transition-timing-function: linear !important;
+    transition-duration: 0ms !important;
+    will-change: transform;
+  }
+
+  .community-slide {
+    flex-shrink: 0;
+    width: auto;
+    height: clamp(160px, 48vw, 220px);
+    overflow: hidden;
+  }
+
+  .community-slide img {
+    display: block;
+    height: 100%;
+    width: auto;
+    max-width: none;
+    pointer-events: none;
+  }
+
+  .community-edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 34px;
+    pointer-events: none;
+    z-index: 15;
+  }
+
+  .community-edge-left {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      #000 0%,
+      rgba(0, 0, 0, 0.86) 42%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+
+  .community-edge-right {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      #000 0%,
+      rgba(0, 0, 0, 0.86) 42%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+
+  @media (min-width: 768px) {
+    .community-edge {
+      width: 120px;
+    }
+
+    .community-slide {
+      height: 400px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .community-swiper .swiper-wrapper {
+      transition-duration: 0ms !important;
+    }
+  }
+</style>

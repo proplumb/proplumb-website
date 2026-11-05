@@ -1,0 +1,257 @@
+---
+interface Props {
+  heading?: string;
+  description?: string;
+  excludeSlug?: string;
+}
+
+const props = Astro.props as Props;
+const heading =
+  props.heading ?? `Open <span class="font-bold">Positions</span>`;
+const description =
+  props.description ??
+  `Kickstart or progress your plumbing career with hands-on experience, <br/> structured training, and support from experienced professionals <br/> across residential, commercial, and civil projects.`;
+const excludeSlug = props.excludeSlug ?? "";
+---
+
+<section
+  class="py-20 px-4 bg-white/6"
+  data-open-positions
+  data-exclude-slug={excludeSlug}
+>
+  <div class="text-center max-w-6xl mx-auto animate-fade-up">
+    <h2 set:html={heading} />
+    <p
+      class="mt-3 text-sm leading-relaxed text-white/80 md:text-base"
+      set:html={description}
+    />
+  </div>
+
+  <div
+    class="mt-8 grid gap-2 md:grid-cols-2 max-w-6xl mx-auto"
+    data-open-positions-list
+  >
+    {
+      Array.from({ length: 4 }).map((_, index) => (
+        <article
+          class="border border-white/10 bg-[#2b2b2b] p-5 md:p-6 animate-skeleton-pulse animate-fade-up"
+          style={`--reveal-delay:${index * 100}ms`}
+          data-skeleton-card
+        >
+          <div class="h-8 w-3/4 rounded bg-white/10" />
+          <div class="mt-3 h-4 w-full rounded bg-white/10" />
+          <div class="mt-2 h-4 w-11/12 rounded bg-white/10" />
+          <div class="mt-2 h-4 w-5/6 rounded bg-white/10" />
+          <div class="mt-5 grid grid-cols-2 gap-2">
+            <div class="h-9 rounded bg-white/10" />
+            <div class="h-9 rounded bg-white/10" />
+          </div>
+        </article>
+      ))
+    }
+  </div>
+
+  <p
+    class="mx-auto mt-6 max-w-6xl text-sm text-white/65 hidden"
+    data-open-positions-error
+  >
+    We couldn't load positions right now. Please try again shortly.
+  </p>
+</section>
+
+<script>
+  import { initSiteAnimations } from "../../scripts/animations/siteAnimations";
+
+  const WORDPRESS_API_BASE_URL = "https://careers.proplumb.com.au";
+  const WORDPRESS_REQUEST_TIMEOUT_MS = 12000;
+
+  const decodeHtml = (value) =>
+    String(value || "")
+      .replace(/&#038;/g, "&")
+      .replace(/&#8211;/g, "–")
+      .replace(/&amp;/g, "&")
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;/g, "'");
+
+  const escapeHtml = (value) =>
+    String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  const toNumber = (value) => {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string" && value.trim()) {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  };
+
+  const formatSalary = (value: number | string | undefined) => {
+    const salary = toNumber(value);
+    return salary !== null ? salary.toLocaleString("en-AU") : "Negotiable";
+  };
+
+  const stripTrailingSlash = (url) => url.replace(/\/+$/, "");
+
+  const renderJobCard = (job, index = 0) => {
+    const title = escapeHtml(
+      decodeHtml(job?.title?.rendered?.trim() || "Untitled Role"),
+    );
+    const shortDescription = (job?.acf?.short_description || "").trim();
+    const employmentType = Array.isArray(job?.acf?.employment_type)
+      ? job.acf.employment_type.filter(Boolean).join(", ")
+      : String(job?.acf?.employment_type || "").trim();
+    const employmentTypeText = escapeHtml(employmentType || "Not specified");
+    const location = escapeHtml(
+      (job?.acf?.location || "").trim() || "Location not specified",
+    );
+    const salary = escapeHtml(formatSalary(job?.acf?.salary));
+    const descriptionLine = escapeHtml(shortDescription);
+    const safeSlug = encodeURIComponent(String(job?.slug || "").trim());
+
+    return `
+      <article class="border border-white/10 bg-[#2b2b2b] p-5 md:p-6 animate-fade-up" style="--reveal-delay:${Math.min(index, 5) * 100}ms">
+        <h3 class="text-2xl leading-tight">${title}</h3>
+        ${descriptionLine ? `<p class="mt-2 text-sm leading-relaxed text-white/80">${descriptionLine}</p>` : ""}
+        <div class="mt-5 grid grid-cols-2 gap-2">
+          <a href="/careers/${safeSlug}" class="inline-flex items-center justify-center border border-white bg-white px-3 py-2 text-xs text-black transition-colors hover:bg-black hover:text-white">Apply Now</a>
+          <a href="/careers/${safeSlug}" class="inline-flex items-center justify-center border border-white/20 bg-white/10 px-3 py-2 text-xs text-white transition-colors hover:bg-white hover:text-black">Learn More</a>
+        </div>
+      </article>
+    `;
+  };
+
+  const fetchJsonWithTimeout = async (url) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      WORDPRESS_REQUEST_TIMEOUT_MS,
+    );
+
+    try {
+      const response = await fetch(url, {
+        headers: { Accept: "application/json" },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed. Status: ${response.status}`);
+      }
+
+      return await response.json();
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  };
+
+  const loadPositions = async (section) => {
+    const list = section.querySelector("[data-open-positions-list]");
+    const errorText = section.querySelector("[data-open-positions-error]");
+    const excludeSlug = (
+      section.getAttribute("data-exclude-slug") || ""
+    ).trim();
+
+    if (!list) return;
+
+    try {
+      const normalizedApiBase = stripTrailingSlash(WORDPRESS_API_BASE_URL);
+      const apiBaseCandidates = [normalizedApiBase];
+
+      if (normalizedApiBase.startsWith("https://")) {
+        apiBaseCandidates.push(
+          normalizedApiBase.replace("https://", "http://"),
+        );
+      }
+
+      let careers = null;
+      let lastError;
+
+      for (const baseUrl of [...new Set(apiBaseCandidates)]) {
+        const apiUrl = `${baseUrl}/wp-json/wp/v2/job?per_page=100&acf_format=standard`;
+        try {
+          careers = await fetchJsonWithTimeout(apiUrl);
+          break;
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      if (!careers) {
+        throw lastError || new Error("Unable to fetch careers from WordPress");
+      }
+
+      if (
+        excludeSlug &&
+        careers.length === 1 &&
+        careers[0]?.slug === excludeSlug
+      ) {
+        section.hidden = true;
+        return;
+      }
+
+      const filtered = careers.filter((job) =>
+        excludeSlug ? job?.slug !== excludeSlug : true,
+      );
+
+      if (!filtered.length) {
+        list.innerHTML = `
+          <div role="status" class="mx-auto grid w-full max-w-4xl gap-7 border-2 border-dotted border-white/25 bg-[#202020] px-6 py-8 text-left md:col-span-2 md:grid-cols-[1fr_auto] md:items-center md:gap-10 md:px-10 md:py-10">
+            <div>
+              <h3 class="text-2xl font-medium leading-tight text-white md:text-3xl">No open roles right now</h3>
+              <p class="mt-4 max-w-xl text-sm leading-relaxed text-white/65 md:text-base">
+                There are no current openings. If you’d like to discuss future opportunities, we’d be glad to hear from you.
+              </p>
+            </div>
+            <a href="/contact" class="inline-flex min-h-12 items-center justify-center gap-3 border border-white bg-white px-5 py-3 text-sm font-medium text-black transition-colors hover:bg-black hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+              Contact our team
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = filtered.map(renderJobCard).join("");
+      requestAnimationFrame(() => initSiteAnimations());
+    } catch (error) {
+      console.error("Unable to load careers from WordPress API.", error);
+      list.innerHTML = "";
+      if (errorText) errorText.classList.remove("hidden");
+    }
+  };
+
+  const sections = document.querySelectorAll("[data-open-positions]");
+  sections.forEach((section) => {
+    loadPositions(section);
+  });
+</script>
+
+<style>
+  @keyframes skeleton-pulse {
+    0% {
+      opacity: 0.45;
+    }
+
+    50% {
+      opacity: 0.9;
+    }
+
+    100% {
+      opacity: 0.45;
+    }
+  }
+
+  .animate-skeleton-pulse {
+    animation: skeleton-pulse 1.35s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-skeleton-pulse {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,639 @@
+---
+import Cta from "../components/Cta.astro";
+import Header from "../components/Header.astro";
+import Layout from "../layouts/Layout.astro";
+import FormStatusModal from "../components/forms/FormStatusModal.astro";
+import headerImage from "../assets/images/headers/contact-us.png";
+import emailIcon from "../assets/images/contact/icons/email.png";
+import phoneIcon from "../assets/images/contact/icons/phone.png";
+import locationlIcon from "../assets/images/contact/icons/location.png";
+import { Image } from "astro:assets";
+import fleetImage from "../assets/images/proplumb_mediumdensity_evergreen_vehicles-4.webp";
+import proplumbLogo from "../assets/images/proplumb-black-logo.png";
+import { createBreadcrumbJsonLd } from "../lib/seo";
+
+const proplumbMapLocation = {
+  lat: -38.0962186,
+  lng: 145.4762039,
+};
+---
+
+<Layout
+  title="Contact ProPlumb"
+  description="Contact ProPlumb for civil, drainage, and plumbing enquiries, project discussions, safe driving feedback, and general assistance."
+  canonical="/contact"
+  ogImage={headerImage}
+  jsonLd={createBreadcrumbJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Contact", url: "/contact" },
+  ])}
+>
+  <Header title="Get In Touch With Us" img={headerImage} />
+  <div
+    class="max-w-6xl mx-auto grid md:grid-cols-2 pt-6 md:pt-8 lg:pt-10 px-6 border-white/20"
+  >
+    <div class="space-y-7 py-4 lg:pr-8">
+      <h2 class="leading-[1.05] tracking-[-1px] animate-fade-up">
+        <span class="font-bold">Have Question</span>
+        <br /> Or Need Assistance?
+      </h2>
+      <p class="text-base leading-relaxed text-white/90 animate-fade-up">
+        At ProPlumb, we’re here to help, whether you’re planning a new project,
+        need expert advice, or want to learn more about working with our team.
+      </p>
+      <p
+        class="text-base leading-relaxed text-white/90 animate-fade-up [--reveal-delay:120ms]"
+      >
+        From large-scale developments to residential builds, our team is ready
+        to connect and point you in the right direction.
+      </p>
+
+      <div class="space-y-5 pt-3 animate-fade-up">
+        <div class="flex items-center gap-4">
+          <div class="bg-[#1F1F1F] size-14 flex items-center justify-center">
+            <Image src={emailIcon} alt="Email icon" class="size-6" />
+          </div>
+          <div>
+            <p class="text-white/65 text-lg leading-none mb-2">Send an Email</p>
+            <p class="font-medium text-xl leading-none">
+              admin@proplumb.com.au
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 [--reveal-delay:100ms]">
+          <div class="bg-[#1F1F1F] size-14 flex items-center justify-center">
+            <Image src={phoneIcon} alt="Phone icon" class="size-6" />
+          </div>
+          <div>
+            <p class="text-white/65 text-lg leading-none mb-2">
+              Give us a Call
+            </p>
+            <p class="font-medium text-xl leading-none">(03) 5940 2477</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 [--reveal-delay:200ms]">
+          <div class="bg-[#1F1F1F] size-14 flex items-center justify-center">
+            <Image src={locationlIcon} alt="Location icon" class="size-6" />
+          </div>
+          <div>
+            <p class="text-white/65 text-lg leading-none mb-2">Address</p>
+            <p class="font-medium text-xl leading-none">
+              7B Evolution Dr, Pakenham VIC 3810
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-[#191919] p-6 md:p-8 lg:p-10 animate-fade-right">
+      <form class="space-y-3" data-contact-form novalidate>
+        <div class="sr-only" aria-hidden="true">
+          <label for="website">Website</label>
+          <input
+            id="website"
+            name="website"
+            type="text"
+            tabindex="-1"
+            autocomplete="off"
+          />
+        </div>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div class="space-y-2">
+            <label
+              for="firstName"
+              class="text-sm text-white uppercase tracking-wide"
+            >
+              First Name
+            </label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              placeholder="John"
+              autocomplete="given-name"
+              class="mt-2 bg-[#111214] text-white w-full h-10 px-3 text-sm border border-transparent focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/25 transition-colors"
+            />
+            <p
+              class="min-h-5 text-sm text-[#FF8E8E]"
+              data-error-for="firstName"
+            >
+            </p>
+          </div>
+          <div class="space-y-2">
+            <label
+              for="lastName"
+              class="text-sm text-white uppercase tracking-wide"
+            >
+              Last Name
+            </label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              placeholder="Doe"
+              autocomplete="family-name"
+              class="mt-2 bg-[#111214] text-white w-full h-10 px-3 text-sm border border-transparent focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/25 transition-colors"
+            />
+            <p class="min-h-5 text-sm text-[#FF8E8E]" data-error-for="lastName">
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-2 [--reveal-delay:90ms]">
+          <label for="phone" class="text-sm text-white uppercase tracking-wide">
+            Phone Number
+          </label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="(03) 0000 0000"
+            autocomplete="tel"
+            class="mt-2 bg-[#111214] text-white w-full h-10 px-3 text-sm border border-transparent focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/25 transition-colors"
+          />
+          <p class="min-h-5 text-sm text-[#FF8E8E]" data-error-for="phone"></p>
+        </div>
+
+        <div class="space-y-2 [--reveal-delay:140ms]">
+          <label for="email" class="text-sm text-white uppercase tracking-wide">
+            Email Address
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="example@email.com"
+            autocomplete="email"
+            class="mt-2 bg-[#111214] text-white w-full h-10 px-3 text-sm border border-transparent focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/25 transition-colors"
+          />
+          <p class="min-h-5 text-sm text-[#FF8E8E]" data-error-for="email"></p>
+        </div>
+
+        <div class="space-y-2 [--reveal-delay:190ms]">
+          <label
+            for="subject"
+            class="text-sm text-white uppercase tracking-wide"
+          >
+            Subject
+          </label>
+          <div class="relative">
+            <select
+              id="subject"
+              name="subject"
+              class="mt-2 appearance-none bg-[#111214] text-white w-full h-10 px-3 pr-9 text-sm border border-transparent focus:outline-none focus:ring-1 focus:ring-white/30 transition-colors"
+            >
+              <option value="">Select a subject</option>
+              <option value="General Inquiry">General Inquiry</option>
+              <option value="Quote Request">Quote Request</option>
+              <option value="Support">Support</option>
+              <option value="Partnership">Partnership</option>
+            </select>
+            <span
+              class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white/50"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m19 9-7 7-7-7"></path>
+              </svg>
+            </span>
+          </div>
+          <p class="min-h-5 text-sm text-[#FF8E8E]" data-error-for="subject">
+          </p>
+        </div>
+
+        <div class="space-y-2 [--reveal-delay:240ms]">
+          <label
+            for="message"
+            class="text-sm text-white uppercase tracking-wide"
+          >
+            Message
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            placeholder="Type your message here..."
+            rows="5"
+            class="mt-2 bg-[#111214] text-white w-full p-3 text-sm resize-none border border-transparent focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/25 transition-colors"
+          ></textarea>
+          <p class="min-h-5 text-sm text-[#FF8E8E]" data-error-for="message">
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          class="bg-white text-black font-medium w-full h-10 hover:bg-gray-200 transition disabled:opacity-60 disabled:cursor-not-allowed [--reveal-delay:300ms]"
+          data-submit-button
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <FormStatusModal />
+
+  <div class="w-full mx-auto">
+    <div class="grid md:grid-cols-2 overflow-hidden">
+      <div class="min-h-[320px] md:min-h-[520px] animate-fade-left">
+        <Image
+          src={fleetImage}
+          alt="ProPlumb fleet vehicle"
+          sizes="(min-width: 768px) 50vw, 100vw"
+          class="w-full h-full object-cover grayscale"
+        />
+      </div>
+
+      <div
+        class="bg-black px-8 py-10 md:px-14 md:py-16 flex flex-col justify-center animate-fade-left"
+      >
+        <h2
+          class="leading-[1] tracking-[-1px] animate-fade-right"
+          data-animate-mobile="fade-up"
+          data-animate-tablet="fade-up"
+        >
+          <span class="font-bold">We Value</span><br />Safe Driving
+        </h2>
+        <p
+          class="mt-6 text-white/90 text-lg leading-relaxed max-w-xl animate-fade-right [--reveal-delay:120ms]"
+        >
+          At ProPlumb, we hold ourselves to the highest standards of
+          accountability on and off the job.
+        </p>
+        <p
+          class="mt-7 text-white/90 text-lg leading-relaxed max-w-xl animate-fade-right [--reveal-delay:220ms]"
+        >
+          Our team takes pride in driving safely and responsibly while operating
+          our fleet vehicles. If you've observed any concerns or would like to
+          share feedback about our drivers, please call us on <span
+            class="font-semibold">(03) 5940 2477</span
+          >.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full">
+    <div
+      class="w-full h-[600px] relative overflow-hidden bg-[#111214] animate-fade-up"
+      data-proplumb-map
+      data-lat={proplumbMapLocation.lat}
+      data-lng={proplumbMapLocation.lng}
+      data-logo-src={proplumbLogo.src}
+    >
+      <div class="w-full h-full grayscale" data-map-canvas></div>
+
+      <div class="hidden w-full h-full relative" data-map-fallback>
+        <iframe
+          class="w-full h-full grayscale"
+          style="filter: grayscale(100%) contrast(90%) brightness(90%); border:0;"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=145.4562039%2C-38.1062186%2C145.4962039%2C-38.0862186&layer=mapnik&marker=-38.0962186%2C145.4762039"
+        >
+        </iframe>
+
+        <div
+          class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[56%] z-10"
+        >
+          <div class="relative">
+            <div
+              class="relative z-20 size-28 md:size-32 rounded-full bg-[#050505] border-[5px] border-[#303034] shadow-[0_16px_30px_rgba(0,0,0,0.45)] flex items-center justify-center"
+            >
+              <Image
+                src={proplumbLogo}
+                alt="ProPlumb"
+                class="w-[72px] md:w-[84px] h-auto object-contain"
+              />
+            </div>
+            <div
+              class="absolute z-10 left-1/2 -translate-x-1/2 top-[107px] md:top-[123px] h-0 w-0 border-l-[13px] border-r-[13px] border-t-[22px] border-l-transparent border-r-transparent border-t-[#303034]"
+            >
+            </div>
+            <div
+              class="absolute z-10 left-1/2 -translate-x-1/2 top-[110px] md:top-[126px] h-0 w-0 border-l-[8px] border-r-[8px] border-t-[14px] border-l-transparent border-r-transparent border-t-[#050505]"
+            >
+            </div>
+            <div
+              class="absolute left-1/2 -translate-x-1/2 top-[132px] md:top-[148px] w-16 h-5 bg-black/35 blur-md rounded-full"
+            >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Cta
+    img={import("../assets/images/proplumb_ateam_office.webp")}
+    title={`Ready to build with the Plumbing, <br/> <span class="font-bold">Drainage & Civil Professionals?</span>`}
+    desc=`If you’re looking for a partner with the experience, systems, and people to support your next project reliably and on schedule, we’d welcome the conversation.`
+  />
+
+  <script>
+    import {
+      createStatusModal,
+      setupAsyncForm,
+    } from "../scripts/forms/asyncForm";
+
+    const form = document.querySelector("[data-contact-form]");
+    const submitButton = document.querySelector("[data-submit-button]");
+
+    if (
+      form instanceof HTMLFormElement &&
+      submitButton instanceof HTMLButtonElement
+    ) {
+      const modal = createStatusModal();
+
+      setupAsyncForm({
+        form,
+        submitButton,
+        endpoint: "/api/contact",
+        payloadType: "json",
+        successState: {
+          kicker: "Thanks for",
+          title: "Getting in Touch",
+          message:
+            "Your message has been sent to our team. We’ll review your enquiry and get back to you as soon as possible.",
+        },
+        errorState: {
+          kicker: "Something went",
+          title: "Wrong",
+          message:
+            "We couldn’t send your message right now. Please try again in a moment or contact us directly.",
+        },
+        fieldRules: {
+          firstName: {
+            validate: (field) =>
+              field.value.trim().length >= 2
+                ? ""
+                : "Please enter your first name.",
+          },
+          lastName: {
+            validate: (field) =>
+              field.value.trim().length >= 2
+                ? ""
+                : "Please enter your last name.",
+          },
+          phone: {
+            validate: (field) => {
+              const cleaned = field.value.replace(/[^\d+]/g, "");
+              return cleaned.length >= 8
+                ? ""
+                : "Please enter a valid phone number.";
+            },
+          },
+          email: {
+            validate: (field) =>
+              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value.trim())
+                ? ""
+                : "Please enter a valid email address.",
+          },
+          subject: {
+            validate: (field) =>
+              field.value ? "" : "Please choose a subject.",
+          },
+          message: {
+            validate: (field) =>
+              field.value.trim().length >= 10
+                ? ""
+                : "Please enter at least 10 characters.",
+          },
+        },
+        modal,
+      });
+    }
+  </script>
+
+  <script>
+    const mapShell = document.querySelector("[data-proplumb-map]");
+    const mapCanvas = mapShell?.querySelector("[data-map-canvas]");
+    const mapFallback = mapShell?.querySelector("[data-map-fallback]");
+
+    const showFallbackMap = () => {
+      mapCanvas?.classList.add("hidden");
+      mapFallback?.classList.remove("hidden");
+    };
+
+    const loadStylesheet = (href) =>
+      new Promise((resolve, reject) => {
+        const existingLink = document.querySelector(`link[href="${href}"]`);
+        if (existingLink) {
+          resolve();
+          return;
+        }
+
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = href;
+        link.onload = resolve;
+        link.onerror = reject;
+        document.head.appendChild(link);
+      });
+
+    const loadScript = (src) =>
+      new Promise((resolve, reject) => {
+        const existingScript = document.querySelector(`script[src="${src}"]`);
+        if (existingScript) {
+          existingScript.addEventListener("load", resolve, { once: true });
+          resolve();
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+
+    const initProplumbMap = async () => {
+      if (!mapShell || !mapCanvas) {
+        showFallbackMap();
+        return;
+      }
+
+      try {
+        await Promise.all([
+          loadStylesheet("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"),
+          loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"),
+        ]);
+      } catch {
+        showFallbackMap();
+        return;
+      }
+
+      const lat = Number(mapShell.dataset.lat);
+      const lng = Number(mapShell.dataset.lng);
+      const logoSrc = mapShell.dataset.logoSrc;
+      const position = [lat, lng];
+
+      const map = L.map(mapCanvas, {
+        center: position,
+        zoom: 15,
+        scrollWheelZoom: false,
+      });
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+      }).addTo(map);
+
+      const proplumbIcon = L.divIcon({
+        className: "proplumb-leaflet-pin",
+        iconSize: [128, 164],
+        iconAnchor: [64, 164],
+        html: `
+          <div class="proplumb-map-pin">
+            <div class="proplumb-map-pin__badge">
+              <img src="${logoSrc}" alt="ProPlumb" style="width: 84px; max-width: 84px; height: auto;" />
+            </div>
+            <div class="proplumb-map-pin__arrow"></div>
+            <div class="proplumb-map-pin__arrow-fill"></div>
+            <div class="proplumb-map-pin__shadow"></div>
+          </div>
+        `,
+      });
+
+      L.marker(position, {
+        icon: proplumbIcon,
+        keyboard: false,
+        title: "ProPlumb location",
+      }).addTo(map);
+    };
+
+    if (!mapShell || !mapCanvas) {
+      showFallbackMap();
+    } else {
+      initProplumbMap();
+    }
+  </script>
+
+  <style>
+    :global(.leaflet-container) {
+      width: 100%;
+      height: 100%;
+      background: #111214;
+      filter: grayscale(100%) contrast(90%) brightness(90%);
+      font-family: inherit;
+    }
+
+    :global(.leaflet-control-attribution) {
+      color: #555;
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    :global(.proplumb-leaflet-pin) {
+      background: transparent;
+      border: 0;
+    }
+
+    :global(.proplumb-map-pin) {
+      position: relative;
+      width: 112px;
+      height: 148px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    :global(.proplumb-map-pin__badge) {
+      width: 112px;
+      height: 112px;
+      border-radius: 9999px;
+      background: #050505;
+      border: 5px solid #303034;
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    :global(.proplumb-map-pin__badge img) {
+      display: block;
+      width: 72px !important;
+      max-width: 72px !important;
+      height: auto;
+      object-fit: contain;
+    }
+
+    :global(.proplumb-map-pin__arrow),
+    :global(.proplumb-map-pin__arrow-fill),
+    :global(.proplumb-map-pin__shadow) {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    :global(.proplumb-map-pin__arrow) {
+      top: 107px;
+      width: 0;
+      height: 0;
+      border-left: 13px solid transparent;
+      border-right: 13px solid transparent;
+      border-top: 22px solid #303034;
+      z-index: 1;
+    }
+
+    :global(.proplumb-map-pin__arrow-fill) {
+      top: 110px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 14px solid #050505;
+      z-index: 1;
+    }
+
+    :global(.proplumb-map-pin__shadow) {
+      top: 132px;
+      width: 64px;
+      height: 20px;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.35);
+      filter: blur(16px);
+    }
+
+    @media (min-width: 768px) {
+      :global(.proplumb-map-pin) {
+        width: 128px;
+        height: 164px;
+      }
+
+      :global(.proplumb-map-pin__badge) {
+        width: 128px;
+        height: 128px;
+      }
+
+      :global(.proplumb-map-pin__badge img) {
+        width: 84px !important;
+        max-width: 84px !important;
+      }
+
+      :global(.proplumb-map-pin__arrow) {
+        top: 123px;
+      }
+
+      :global(.proplumb-map-pin__arrow-fill) {
+        top: 126px;
+      }
+
+      :global(.proplumb-map-pin__shadow) {
+        top: 148px;
+      }
+    }
+  </style>
+</Layout>

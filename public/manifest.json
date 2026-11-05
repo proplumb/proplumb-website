@@ -1,0 +1,14 @@
+{
+  "name": "ProPlumb",
+  "short_name": "ProPlumb",
+  "icons": [
+    {
+      "src": "/favicon-v3.png",
+      "sizes": "268x267",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

@@ -1,0 +1,550 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import type { CollectionEntry } from "astro:content";
+import type { ImageMetadata } from "astro";
+import Cta from "../../components/Cta.astro";
+import { resolveAssetImage } from "../../utils/resolveAssetImage";
+import { createBreadcrumbJsonLd } from "../../lib/seo";
+
+export interface Props {
+  entry: CollectionEntry<"showcase">;
+}
+
+export async function getStaticPaths() {
+  const showcaseEntries = (await getCollection("showcase")).filter(
+    (entry) => entry.data.status === "publish",
+  );
+  return showcaseEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry }: Props = Astro.props;
+const { Content } = await entry.render();
+const showcaseEntries = (await getCollection("showcase")).filter(
+  (project) => project.data.status === "publish",
+);
+const getImageSrc = (image: string | ImageMetadata) => resolveAssetImage(image);
+const seoTitle = entry.data.seoTitle || `${entry.data.title} Project`;
+const seoDescription =
+  entry.data.seoDescription ||
+  entry.data.description ||
+  entry.data.shortDescription;
+const seoImage = entry.data.ogImage || entry.data.image;
+const heroTitle = entry.data.heroTitle || entry.data.title;
+const heroTitleParts = heroTitle.includes("\n")
+  ? heroTitle.split("\n")
+  : heroTitle.split(/\s[-—]\s/);
+const cleanHeroTitleParts = heroTitleParts
+  .map((part) => part.trim())
+  .filter(Boolean);
+const hasBodyContent = Boolean(entry.body?.trim());
+const galleryImages = entry.data.gallery || [];
+const featureSection = entry.data.featureSection;
+const hasFeatureSection = Boolean(
+  featureSection?.delivery?.body?.length &&
+  featureSection?.outcome?.body?.length,
+);
+const scopeOfWorks = entry.data.scopeOfWorks;
+const hasScopeOfWorks = Boolean(scopeOfWorks?.items?.length);
+const preferredProjectOrder = [
+  "metricon-town-living",
+  "custom-build-berwick",
+  "villa-ulibarri-23-gulls-way-frankston",
+  "sjd-homes-commercial-office-expansion",
+  "5-play-sale",
+];
+const otherCompletedProjects = showcaseEntries
+  .filter((project) => project.slug !== entry.slug)
+  .sort((projectA, projectB) => {
+    const projectAIndex = preferredProjectOrder.indexOf(projectA.slug);
+    const projectBIndex = preferredProjectOrder.indexOf(projectB.slug);
+    const normalizedProjectAIndex =
+      projectAIndex === -1 ? preferredProjectOrder.length : projectAIndex;
+    const normalizedProjectBIndex =
+      projectBIndex === -1 ? preferredProjectOrder.length : projectBIndex;
+
+    return normalizedProjectAIndex - normalizedProjectBIndex;
+  })
+  .slice(0, 2);
+const hasOtherCompletedProjects = otherCompletedProjects.length === 2;
+const projectDetails = [
+  { label: entry.data.clientLabel || "Client", value: entry.data.client },
+  { label: "Project Type", value: entry.data.projectType },
+  { label: "Location", value: entry.data.location },
+  { label: "Completion Date", value: entry.data.completionDate },
+  { label: "ProPlumb services", value: entry.data.proPlumbServices },
+].filter((detail) => detail.value);
+const getHighlightedTitleLines = (title: string, boldWords: string[] = []) =>
+  title.split("\n").map((line) =>
+    line.split(/(\s+)/).map((part) => ({
+      text: part,
+      isBold: boldWords.includes(part.trim()),
+    })),
+  );
+---
+
+<Layout
+  title={seoTitle}
+  description={seoDescription}
+  canonical={`/showcase/${entry.slug}`}
+  ogImage={seoImage}
+  jsonLd={createBreadcrumbJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Projects", url: "/showcase" },
+    { name: entry.data.title, url: `/showcase/${entry.slug}` },
+  ])}
+>
+  <section class="project-hero px-4 pb-14 pt-6 lg:pb-20 lg:pt-8">
+    <div
+      class="mx-auto grid max-w-[1120px] grid-cols-1 gap-8 md:grid-cols-[48.5%_1fr] md:items-stretch lg:gap-10"
+    >
+      <div
+        class="project-hero__media relative h-[420px] overflow-hidden animate-fade-right md:h-auto"
+      >
+        <img
+          src={getImageSrc(entry.data.image)}
+          alt={entry.data.title}
+          class="h-full w-full object-cover object-center"
+        />
+
+        {
+          galleryImages.length > 0 && (
+            <a
+              href="#project-gallery"
+              class="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-white/20 px-8 py-4 text-base font-medium text-white backdrop-blur-sm transition-colors duration-300 hover:bg-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white lg:text-[20px]"
+            >
+              View Gallery
+            </a>
+          )
+        }
+      </div>
+
+      <div
+        class="project-hero__content animate-fade-left [--reveal-delay:120ms]"
+      >
+        <h1
+          class="mb-6 text-[36px] font-light leading-[1.1] tracking-[0px] text-white text-center sm:text-left md:text-[38px] lg:mb-7 lg:text-[40px]"
+        >
+          {
+            cleanHeroTitleParts.map((part, index) => (
+              <span class:list={["sm:block", index === 0 && "font-extrabold"]}>
+                {part}
+              </span>
+            ))
+          }
+        </h1>
+
+        {
+          hasBodyContent && (
+            <div class="project-copy prose max-w-none text-white text-center sm:text-left">
+              <Content />
+            </div>
+          )
+        }
+
+        {
+          projectDetails.length > 0 && (
+            <dl class="mt-6 divide-y divide-dashed divide-white/35 border-b border-dashed border-white/35">
+              {projectDetails.map((detail) => (
+                <div class="grid grid-cols-[120px_1fr] gap-2 py-3.5 text-white items-center sm:grid-cols-[220px_1fr]">
+                  <dt class="text-[14px] font-light leading-tight text-white/70 sm:text-[16px] lg:text-[20px]">
+                    {detail.label}
+                  </dt>
+                  <dd class="text-[14px] font-bold leading-tight text-white text-right sm:text-right sm:text-[16px] lg:text-[20px]">
+                    {detail.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Project Feature Section -->
+  {
+    hasFeatureSection && featureSection && (
+      <section class="project-feature px-4 pb-14 lg:pb-20">
+        <div class="mx-auto grid max-w-[1120px] grid-cols-1 overflow-hidden md:grid-cols-2">
+          <!-- Row 1 Desktop: Text (left) | Image (right) — Mobile: Text then Image -->
+          <article class="project-feature__panel flex min-h-[500px] flex-col justify-center bg-[#1d1d1c] px-7 py-10 text-white md:min-h-[620px] md:px-12 lg:min-h-[760px] lg:px-14 animate-fade-right order-1 md:order-none">
+            <div class="max-w-[430px] mx-auto md:mx-0">
+              <h2 class="project-feature__title mb-7 text-[28px] font-light leading-[1.05] tracking-[0px] text-white text-center md:text-left md:text-[32px]">
+                {getHighlightedTitleLines(
+                  featureSection.delivery.title,
+                  featureSection.delivery.boldWords,
+                ).map((line) => (
+                  <span class="sm:block">
+                    {line.map((part) =>
+                      part.isBold ? <strong>{part.text}</strong> : part.text,
+                    )}
+                  </span>
+                ))}
+              </h2>
+
+              <div class="project-feature__copy text-center md:text-left">
+                {featureSection.delivery.body.map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          <div class="min-h-[500px] overflow-hidden md:min-h-[620px] lg:min-h-[760px] animate-fade-left [--reveal-delay:120ms] order-2 md:order-none">
+            <img
+              src={getImageSrc(featureSection.delivery.image)}
+              alt={featureSection.delivery.imageAlt || entry.data.title}
+              class="h-full w-full object-cover object-[72%_70%]"
+            />
+          </div>
+
+          <!-- Row 2 Desktop: Image (left) | Text (right) — Mobile: Text then Image -->
+          <div class="min-h-[500px] overflow-hidden md:min-h-[620px] lg:min-h-[760px] animate-fade-left [--reveal-delay:120ms] order-4 md:order-none">
+            <img
+              src={getImageSrc(featureSection.outcome.image)}
+              alt={featureSection.outcome.imageAlt || entry.data.title}
+              class="h-full w-full object-cover object-[50%_72%]"
+            />
+          </div>
+
+          <article class="project-feature__panel flex min-h-[500px] flex-col justify-center bg-[#1d1d1c] px-7 py-10 text-white md:min-h-[620px] md:px-12 lg:min-h-[760px] lg:px-14 animate-fade-right order-3 md:order-none">
+            <div class="max-w-[430px] mx-auto md:mx-0">
+              <h2 class="project-feature__title mb-7 text-[28px] font-light leading-[1.05] tracking-[0px] text-white text-center md:text-left md:text-[32px]">
+                {getHighlightedTitleLines(
+                  featureSection.outcome.title,
+                  featureSection.outcome.boldWords,
+                ).map((line) => (
+                  <span class="sm:block">
+                    {line.map((part) =>
+                      part.isBold ? <strong>{part.text}</strong> : part.text,
+                    )}
+                  </span>
+                ))}
+              </h2>
+
+              <div class="project-feature__copy text-center md:text-left">
+                {featureSection.outcome.body.map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Image Gallery -->
+  {
+    galleryImages.length > 0 && (
+      <section id="project-gallery" class="scroll-mt-24 px-4">
+        <div class="mx-auto max-w-[1120px]">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2">
+            <div class="group col-span-full relative overflow-hidden cursor-pointer min-h-[420px] lg:h-[640px] animate-fade-up">
+              <img
+                src={getImageSrc(galleryImages[0])}
+                alt={`${entry.data.title} - Gallery image 1`}
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
+
+            {galleryImages.slice(1).map((image, index) => (
+              <div
+                class:list={[
+                  "group relative overflow-hidden aspect-[4/3] cursor-pointer",
+                  index % 2 === 0 ? "animate-fade-right" : "animate-fade-left",
+                ]}
+              >
+                <img
+                  src={getImageSrc(image)}
+                  alt={`${entry.data.title} - Gallery image ${index + 2}`}
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Disciplines Delivered Section -->
+  {
+    hasScopeOfWorks && scopeOfWorks && (
+      <section class="scope-section bg-[#222221] px-4 py-10 md:py-12 mt-10">
+        <div class="mx-auto grid max-w-[1120px] grid-cols-1 px-8 py-12 text-white md:min-h-[380px] md:grid-cols-[170px_1fr] md:gap-11 md:px-11 md:py-14 lg:grid-cols-[220px_1fr] lg:gap-[72px] lg:px-16">
+          <div class="flex items-center justify-center md:justify-center animate-fade-right">
+            <h2 class="scope-section__title text-[36px] font-light leading-[0.9] tracking-[0px] text-white text-center md:text-left lg:text-[40px]">
+              {getHighlightedTitleLines(
+                scopeOfWorks.title,
+                scopeOfWorks.boldWords,
+              ).map((line) => (
+                <span class="sm:block">
+                  {line.map((part) =>
+                    part.isBold ? <strong>{part.text}</strong> : part.text,
+                  )}
+                </span>
+              ))}
+            </h2>
+          </div>
+
+          <div class="mt-10 grid grid-cols-1 gap-x-14 gap-y-10 md:mt-0 md:grid-cols-2 md:gap-y-10 animate-fade-left [--reveal-delay:120ms]">
+            {scopeOfWorks.items.map((item) => (
+              <article class="scope-section__item">
+                <h3 class="mb-3 text-[26px] font-extrabold leading-none tracking-[0px] text-white text-center md:text-left lg:text-[27px]">
+                  {item.title}
+                </h3>
+                <p class="text-center md:text-left">{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Other Completed Projects Section -->
+  {
+    hasOtherCompletedProjects && (
+      <section class="other-projects my-8">
+        <div class="grid w-full overflow-hidden bg-black md:grid-cols-[1fr_320px_1fr]">
+          <a
+            href={`/showcase/${otherCompletedProjects[0].slug}`}
+            class="other-projects__card group relative flex min-h-[170px] items-center overflow-hidden px-9 text-white lg:min-h-[210px]"
+            data-animate-desktop="fade-up"
+            data-animate-mobile="fade-left"
+            style="--reveal-delay: 0ms"
+            aria-label={`View ${otherCompletedProjects[0].data.title}`}
+          >
+            <img
+              src={getImageSrc(otherCompletedProjects[0].data.image)}
+              alt={otherCompletedProjects[0].data.title}
+              class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <span class="absolute inset-0 bg-black/45 transition-colors duration-300 group-hover:bg-black/32" />
+            <span class="other-projects__arrow other-projects__arrow--prev" aria-hidden="true" />
+            <span class="relative z-10 block max-w-[245px]">
+              <span class="block text-[16px] font-semibold leading-[1.05] text-white lg:text-[20px]">
+                {otherCompletedProjects[0].data.title}
+              </span>
+              <span class="mt-1 block text-[14px] font-light leading-tight text-white/70 lg:text-[20px]">
+                {otherCompletedProjects[0].data.shortDescription}
+              </span>
+            </span>
+          </a>
+
+          <div
+            class="flex min-h-[170px] items-center justify-center bg-black px-8 text-center text-white lg:min-h-[210px]"
+            data-animate-desktop="fade-up"
+            data-animate-mobile="fade-left"
+            style="--reveal-delay: 120ms"
+          >
+            <h2 class="text-[27px] font-light leading-[0.9] tracking-[0px] text-white">
+              <span class="block">Other Completed</span>
+              <strong class="block font-extrabold">Projects</strong>
+            </h2>
+          </div>
+
+          <a
+            href={`/showcase/${otherCompletedProjects[1].slug}`}
+            class="other-projects__card group relative flex min-h-[170px] items-center overflow-hidden px-9 text-white lg:min-h-[210px]"
+            data-animate-desktop="fade-up"
+            data-animate-mobile="fade-left"
+            style="--reveal-delay: 240ms"
+            aria-label={`View ${otherCompletedProjects[1].data.title}`}
+          >
+            <img
+              src={getImageSrc(otherCompletedProjects[1].data.image)}
+              alt={otherCompletedProjects[1].data.title}
+              class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <span class="absolute inset-0 bg-black/55 transition-colors duration-300 group-hover:bg-black/42" />
+            <span class="other-projects__arrow" aria-hidden="true" />
+            <span class="relative z-10 block max-w-[245px]">
+              <span class="block text-[16px] font-semibold leading-[1.05] text-white lg:text-[20px]">
+                {otherCompletedProjects[1].data.title}
+              </span>
+              <span class="mt-1 block text-[14px] font-light leading-tight text-white/70 lg:text-[20px]">
+                {otherCompletedProjects[1].data.shortDescription}
+              </span>
+            </span>
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    entry.data.disciplines && entry.data.disciplines.length > 0 && (
+      <section class="relative mt-10 px-4 py-16">
+        <div class="mx-auto grid max-w-[1120px] grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+          <h2 class="text-center md:text-start animate-fade-right">Disciplines Delivered</h2>
+          <div class="flex flex-col gap-10">
+            {entry.data.disciplines.map((discipline, dIndex) => (
+              <div
+                class="z-20 space-y-4"
+                style={`--reveal-delay: ${dIndex * 100}ms`}
+              >
+                <h3 class="text-3xl border-b pb-6 text-center md:text-left animate-fade-left">
+                  {discipline.title}
+                </h3>
+                <p class="text-[16px] leading-[1.45] lg:text-[20px] text-center md:text-left animate-fade-left [--reveal-delay:100ms]">
+                  {discipline.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Testimonial Section -->
+  {
+    entry.data.testimonial && (
+      <section class="px-4 py-16">
+        <div class="mx-auto max-w-[1120px] animate-fade-up">
+          <blockquote class="text-2xl md:text-4xl font-light mb-8 text-start text-white">
+            "{entry.data.testimonial.quote}"
+          </blockquote>
+
+          <div class="flex items-center justify-center sm:items-start sm:justify-start animate-fade-up [--reveal-delay:150ms]">
+            <div class="w-12 h-12 bg-gray-300 rounded-full mr-4 shrink-0" />
+            <div class="text-center sm:text-left">
+              <p class="font-semibold">{entry.data.testimonial.name}</p>
+              {entry.data.testimonial.role && (
+                <p class="text-sm">{entry.data.testimonial.role}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <Cta />
+
+  <style>
+    .project-hero__media {
+      min-height: 420px;
+    }
+
+    .project-hero :global(.project-copy),
+    .project-hero :global(.project-copy *) {
+      color: #fff;
+    }
+
+    .project-hero :global(.project-copy p) {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.5;
+      margin: 0 0 1.45rem;
+    }
+
+    .project-hero :global(.project-copy p:last-child) {
+      margin-bottom: 0;
+    }
+
+    .project-feature__title strong {
+      font-weight: 800;
+    }
+
+    .project-feature__copy p {
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.44;
+      margin: 0 0 1.55rem;
+    }
+
+    .project-feature__copy p:last-child {
+      margin-bottom: 0;
+    }
+
+    .scope-section__title strong {
+      font-weight: 800;
+    }
+
+    .scope-section__item p {
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.25;
+      margin: 0;
+    }
+
+    @media (min-width: 768px) {
+      .scope-section__item p {
+        max-width: 360px;
+      }
+    }
+
+    .other-projects__arrow {
+      border: 8px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      display: block;
+      height: 112px;
+      position: absolute;
+      right: -28px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 112px;
+      z-index: 1;
+    }
+
+    .other-projects__arrow::before {
+      border-right: 7px solid rgba(255, 255, 255, 0.24);
+      border-top: 7px solid rgba(255, 255, 255, 0.24);
+      content: "";
+      display: block;
+      height: 33px;
+      position: absolute;
+      right: 36px;
+      top: 32px;
+      transform: rotate(45deg);
+      width: 33px;
+    }
+
+    .other-projects__arrow--prev {
+      left: -28px;
+      right: auto;
+    }
+
+    .other-projects__arrow--prev::before {
+      border-left: 7px solid rgba(255, 255, 255, 0.24);
+      border-right: none;
+      border-top: 7px solid rgba(255, 255, 255, 0.24);
+      left: 36px;
+      right: auto;
+      transform: rotate(-45deg);
+    }
+
+    @media (min-width: 768px) {
+      .project-hero__media {
+        height: 100%;
+        min-height: 100%;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .project-hero__content {
+        padding-top: 0.1rem;
+      }
+
+      .scope-section__item p {
+        font-size: 20px;
+      }
+
+      .project-hero :global(.project-copy p),
+      .project-feature__copy p {
+        font-size: 20px;
+      }
+    }
+  </style>
+</Layout>

@@ -1,0 +1,222 @@
+---
+const heroText = {
+  line1: "Professionals in Civil, Drainage & Plumbing",
+  line2: "30+ years strong",
+};
+---
+
+<section
+  id="hero-section"
+  class="absolute inset-x-0 top-[80px] h-[100svh] z-10 overflow-hidden bg-black"
+  style="will-change: transform;"
+>
+  <div
+    id="hero-video-wrapper"
+    class="absolute inset-[-12px] size-[calc(100%+24px)] origin-top transform-gpu will-change-transform md:inset-0 md:size-full"
+    style="transform: translate3d(0, 0, 0) scale(1.06);"
+  >
+    <div style="position:absolute;inset:0;overflow:hidden;">
+      <iframe
+        id="hero-video"
+        src="https://player.vimeo.com/video/1193104412?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        class="absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 md:top-0 md:-translate-y-0"
+        style="width:177.78vh;height:56.25vw;"
+        title="Website Video"></iframe>
+    </div>
+    <script src="https://player.vimeo.com/api/player.js"></script>
+  </div>
+
+  <div
+    class="absolute inset-0"
+    style="background-image: linear-gradient(179deg, rgba(0, 0, 0, 0) 33.6%, #000 98.5%);"
+  >
+  </div>
+
+  <div
+    class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent via-black/45 to-black"
+  >
+  </div>
+
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 h-3 bg-black">
+  </div>
+
+  <div
+    class="relative z-10 flex h-full w-full items-end justify-center px-4 pb-18 md:pb-28"
+  >
+    <div class="w-full max-w-[1090px] text-start lg:text-center text-white">
+      <h1
+        class="text-3xl leading-[40px] tracking-[-0.03em] md:text-[52px] md:leading-[58px] animate-fade-up"
+      >
+        {heroText.line1}
+        <br />
+        <span class="font-bold"> {heroText.line2}</span>
+      </h1>
+    </div>
+  </div>
+
+  <div class="absolute bottom-14 right-6 z-10 md:bottom-16 md:right-10">
+    <button
+      id="play-pause-btn"
+      class="relative flex size-11 items-center justify-center rounded-full bg-black/25 text-white backdrop-blur-sm transition hover:bg-black/35 cursor-pointer"
+      aria-label="Play or pause hero video"
+      aria-pressed="false"
+    >
+      <svg
+        class="pointer-events-none absolute inset-0 -rotate-90"
+        viewBox="0 0 48 48"
+        fill="none"
+        aria-hidden="true"
+      >
+        <circle
+          cx="24"
+          cy="24"
+          r="20"
+          stroke="rgba(255,255,255,0.35)"
+          stroke-width="4"></circle>
+        <circle
+          id="hero-progress-ring"
+          cx="24"
+          cy="24"
+          r="20"
+          stroke="white"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-dasharray="125.66"
+          stroke-dashoffset="125.66"></circle>
+      </svg>
+      <svg
+        id="play-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+        class="relative z-10 hidden size-5 translate-x-[1px]"
+      >
+        <path d="M8 6v12l10-6z"></path>
+      </svg>
+
+      <svg
+        id="pause-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+        class="relative z-10 size-5"
+      >
+        <path d="M7 6h3v12H7zm7 0h3v12h-3z"></path>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<script>
+  const videoIframe = document.getElementById(
+    "hero-video",
+  ) as HTMLIFrameElement | null;
+  const videoWrapper = document.getElementById("hero-video-wrapper");
+  const playPauseBtn = document.getElementById(
+    "play-pause-btn",
+  ) as HTMLButtonElement | null;
+  const playIcon = document.getElementById("play-icon");
+  const pauseIcon = document.getElementById("pause-icon");
+  const heroSection = document.getElementById("hero-section");
+  const progressRing = document.getElementById(
+    "hero-progress-ring",
+  ) as SVGCircleElement | null;
+
+  if (videoIframe && playPauseBtn) {
+    const ringRadius = 20;
+    const ringCircumference = 2 * Math.PI * ringRadius;
+    const baseScale = 1.06;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const syncPlaybackUi = (paused: boolean) => {
+      playIcon?.classList.toggle("hidden", !paused);
+      pauseIcon?.classList.toggle("hidden", paused);
+      playPauseBtn.setAttribute("aria-pressed", String(paused));
+    };
+
+    const updateProgressRing = (currentTime: number, duration: number) => {
+      if (!progressRing) return;
+      const progress = duration > 0 ? currentTime / duration : 0;
+      const offset =
+        ringCircumference * (1 - Math.min(Math.max(progress, 0), 1));
+      progressRing.style.strokeDasharray = String(ringCircumference);
+      progressRing.style.strokeDashoffset = String(offset);
+    };
+
+    const waitForVimeo = (cb: () => void) => {
+      if ((window as any).Vimeo) {
+        cb();
+      } else {
+        const check = setInterval(() => {
+          if ((window as any).Vimeo) {
+            clearInterval(check);
+            cb();
+          }
+        }, 100);
+      }
+    };
+
+    // Default to playing state since autoplay is enabled
+    syncPlaybackUi(false);
+
+    waitForVimeo(() => {
+      const player = new (window as any).Vimeo.Player(videoIframe);
+
+      if (prefersReducedMotion) {
+        player.pause();
+        playPauseBtn.classList.add("hidden");
+        videoIframe.classList.add("hidden");
+      } else {
+        player.play().catch(() => {
+          // Autoplay may be blocked; UI already shows playing state
+        });
+      }
+
+      playPauseBtn.addEventListener("click", () => {
+        player.getPaused().then((paused: boolean) => {
+          if (paused) {
+            player.play();
+          } else {
+            player.pause();
+          }
+        });
+      });
+
+      player.on("play", () => {
+        syncPlaybackUi(false);
+      });
+
+      player.on("pause", () => {
+        syncPlaybackUi(true);
+      });
+
+      player.on("loaded", () => {
+        Promise.all([player.getCurrentTime(), player.getDuration()]).then(
+          ([currentTime, duration]) => {
+            updateProgressRing(currentTime, duration);
+          },
+        );
+      });
+
+      player.on("timeupdate", (data: { seconds: number; duration: number }) => {
+        updateProgressRing(data.seconds, data.duration);
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener("scroll", () => {
+      if (prefersReducedMotion || ticking || !videoWrapper) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const scrolled = window.pageYOffset;
+        videoWrapper.style.transform = `translate3d(0, ${-scrolled * 0.15}px, 0) scale(${baseScale})`;
+        ticking = false;
+      });
+    });
+  }
+</script>

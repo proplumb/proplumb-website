@@ -1,0 +1,164 @@
+---
+import { getCollection } from "astro:content";
+import ShowcaseCard from "./ShowcaseCard.astro";
+
+const showcaseItems = (await getCollection("showcase")).filter(
+  (item) => item.data.status === "publish",
+);
+
+// Base button classes shared by all filters
+const baseButtonClasses =
+  "filter-btn px-6 py-2 border font-medium transition-all duration-300 cursor-pointer border-secondary/20";
+
+type TopLevelCategory = "civil-drainage" | "plumbing";
+
+const categoryLabelMap: Record<TopLevelCategory, string> = {
+  "civil-drainage": "Civil & Drainage",
+  plumbing: "Plumbing",
+};
+
+const getCategoryLabels = (categories: TopLevelCategory[]) =>
+  categories.map((category) => categoryLabelMap[category]).join(", ");
+
+// Filter configuration - centralized styling and data
+const filters = [
+  {
+    label: "All Projects",
+    filter: "all",
+    active: true,
+    classes: `${baseButtonClasses} active border-black bg-white text-black`,
+  },
+  {
+    label: "Civil & Drainage",
+    filter: "civil-drainage",
+    active: false,
+    classes: `${baseButtonClasses}  bg-black text-white`,
+  },
+  {
+    label: "Plumbing",
+    filter: "plumbing",
+    active: false,
+    classes: `${baseButtonClasses}  bg-black text-white`,
+  },
+];
+
+// Sort by featured first, then by completion date
+const sortedItems = showcaseItems.sort((a, b) => {
+  if (a.data.featured && !b.data.featured) return -1;
+  if (!a.data.featured && b.data.featured) return 1;
+  return (
+    new Date(b.data.completionDate || "").getTime() -
+    new Date(a.data.completionDate || "").getTime()
+  );
+});
+---
+
+<section class="py-16 px-4 max-w-7xl mx-auto">
+  <!-- Filter Tabs -->
+  <div class="flex flex-wrap justify-start gap-2 mb-12 animate-fade-up">
+    {
+      filters.map((filter) => (
+        <button class={filter.classes} data-filter={filter.filter}>
+          {filter.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <!-- Showcase Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+    {
+      sortedItems.map((item, index) => (
+        <div class="showcase-item" data-categories={item.data.categories.join(",")}>
+          <div
+            class="animate-fade-up"
+            style={`--reveal-delay:${Math.min(index % 4, 3) * 100}ms`}
+          >
+            <ShowcaseCard
+              title={item.data.title}
+              shortDescription={item.data.shortDescription}
+              category={getCategoryLabels(item.data.categories)}
+              image={item.data.image}
+              slug={item.slug}
+              featured={item.data.featured}
+            />
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  const initShowcaseFilters = () => {
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    const showcaseItems = document.querySelectorAll(".showcase-item");
+
+    if (filterBtns.length === 0 || showcaseItems.length === 0) return;
+
+    const applyFilter = (filter) => {
+      showcaseItems.forEach((item) => {
+        const categories = (item.getAttribute("data-categories") ?? "")
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean);
+        if (filter === "all" || categories.includes(filter)) {
+          item.style.display = "block";
+          item.style.animation = "fadeIn 0.5s ease-in-out";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    };
+
+    const setActiveButton = (filter) => {
+      filterBtns.forEach((button) => {
+        const buttonFilter = button.getAttribute("data-filter");
+        if (buttonFilter === filter) {
+          button.classList.add("active", "bg-white", "text-black");
+          button.classList.remove("bg-black", "text-white");
+        } else {
+          button.classList.remove("active", "bg-white", "text-black");
+          button.classList.add("bg-black", "text-white");
+        }
+      });
+    };
+
+    // Always start with all projects visible.
+    setActiveButton("all");
+    applyFilter("all");
+
+    filterBtns.forEach((btn) => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+
+      btn.addEventListener("click", function () {
+        const filter = this.getAttribute("data-filter") || "all";
+        setActiveButton(filter);
+        applyFilter(filter);
+      });
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initShowcaseFilters);
+  } else {
+    initShowcaseFilters();
+  }
+
+  // Support Astro client-side page transitions/navigation.
+  document.addEventListener("astro:page-load", initShowcaseFilters);
+</script>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
